@@ -536,7 +536,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       { key: 'State Senate',           label: '🏛️ SEN',     bg: '#8071d4' },
       { key: 'State Supreme Court',    label: '🕊️ SCOBBS',  bg: '#0181c7' },
       { key: 'Chief Justice',           label: '🕊️ CHIEF',   bg: '#0181c7' },
-      { key: 'Party Delegate',         label: '🪧 DEL',     bg: partyColor },
+      { key: 'Party Delegate',         label: '🪧 DEL',     bg: partyColor, hideIfAny: ['Party Chair','Party Secretary','Party Campaign Manager'] },
       { key: 'Party Chair',            label: '🪑 CHAIR',   bg: partyColor },
       { key: 'Party Secretary',        label: '📝 SEC',     bg: partyColor },
       { key: 'Party Campaign Manager', label: '📣 CM',      bg: partyColor },
@@ -549,6 +549,8 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
     ];
     stateTagDefs.forEach(function(st) {
       if (isTrue(c[st.key])) {
+        // Skip if hideIfAny roles are present
+        if (st.hideIfAny && st.hideIfAny.some(function(r) { return isTrue(c[r]); })) return;
         var stag = document.createElement('span');
         stag.className = 'tag';
         stag.textContent = st.label;
