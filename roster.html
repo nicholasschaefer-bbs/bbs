@@ -233,18 +233,23 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
     </select>
   </div>
   <div class="filter-group">
-    <label>State Process</label>
+    <label>State Government</label>
     <select id="filter-state-process">
       <option value="">All</option>
       <option value="School Board">School Board</option>
       <option value="State Assembly">State Assembly</option>
       <option value="State Senate">State Senate</option>
       <option value="State Supreme Court">State Supreme Court</option>
-      <option value="State Cabinet">State Cabinet</option>
-      <option value="State Federalist Party Delegates">Federalist Party Delegates</option>
-      <option value="State Nationalist Party Delegates">Nationalist Party Delegates</option>
-      <option value="State Federalist Party Leadership">Federalist Party Leadership</option>
-      <option value="State Nationalist Party Leadership">Nationalist Party Leadership</option>
+      <option value="Party Delegate">Party Delegate</option>
+      <option value="Party Chair">Party Chair</option>
+      <option value="Party Secretary">Party Secretary</option>
+      <option value="Party Campaign Manager">Party Campaign Manager</option>
+      <option value="Governor">Governor</option>
+      <option value="Lt. Governor">Lt. Governor</option>
+      <option value="Sec. of State">Sec. of State</option>
+      <option value="State Treasurer">State Treasurer</option>
+      <option value="Superintendent">Superintendent</option>
+      <option value="Attorney General">Attorney General</option>
     </select>
   </div>
   <button class="filter-reset" id="filter-reset">Reset filters</button>
@@ -487,8 +492,9 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
     // State process tags — steel blue background, white text
     var stateTags = [
       'School Board', 'State Assembly', 'State Senate', 'State Supreme Court',
-      'State Cabinet', 'State Federalist Party Delegates', 'State Nationalist Party Delegates',
-      'State Federalist Party Leadership', 'State Nationalist Party Leadership'
+      'Party Delegate', 'Party Chair', 'Party Secretary', 'Party Campaign Manager',
+      'Governor', 'Lt. Governor', 'Sec. of State', 'State Treasurer',
+      'Superintendent', 'Attorney General'
     ];
     stateTags.forEach(function(st) {
       if (isTrue(c[st])) {
