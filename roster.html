@@ -21,7 +21,12 @@ body { font-family: 'Barlow', 'Helvetica Neue', Arial, sans-serif !important; ba
 .citizen-count { font-family: var(--condensed); font-size: 13px; color: #ffffff; letter-spacing: 0.06em; text-transform: uppercase; }
 
 /* Filters */
-.filters { background: var(--surface); border-bottom: 3px solid var(--border); padding: 1rem 2rem; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; position: sticky; top: 73px; z-index: 999; }
+.filters { background: var(--surface); border-bottom: 3px solid var(--border); padding: 1rem 2rem; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; position: sticky; top: 73px; z-index: 999; transition: padding 0.25s ease, gap 0.25s ease; }
+.filters.collapsed { padding: 0.4rem 1rem; gap: 6px; }
+.filters.collapsed .filter-group label { display: none; }
+.filters.collapsed .filter-group select, .filters.collapsed .filter-group input { font-size: 11px; padding: 4px 6px; width: 100px; }
+.filters.collapsed .filter-reset { margin-top: 0; font-size: 11px; }
+@media (min-width: 601px) { .filters.collapsed { padding: 1rem 2rem; gap: 12px; } .filters.collapsed .filter-group label { display: block; } .filters.collapsed .filter-group select, .filters.collapsed .filter-group input { font-size: 13px; padding: 6px 10px; width: 160px; } }
 .filter-group { display: flex; flex-direction: column; gap: 4px; }
 .filter-group label { font-size: 11px; color: var(--yale); font-family: var(--condensed); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
 .filter-group select, .filter-group input { font-family: var(--sans); font-size: 13px; padding: 6px 10px; border: 2px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); outline: none; width: 160px; }
@@ -280,9 +285,39 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
 
 <script>
 (function() {
+  // Collapse filter bar on scroll — mobile only
+  var lastScroll = 0;
+  window.addEventListener('scroll', function() {
+    if (window.innerWidth > 600) return;
+    var filtersEl = document.querySelector('.filters');
+    if (!filtersEl) return;
+    var current = window.scrollY;
+    if (current > 80 && current > lastScroll) {
+      filtersEl.classList.add('collapsed');
+    } else if (current < lastScroll - 10) {
+      filtersEl.classList.remove('collapsed');
+    }
+    lastScroll = current;
+  }, { passive: true });
+
   var allCitizens = [];
   var currentAudio = null;
   var currentBtn   = null;
+
+  // Collapse filter bar on scroll — mobile only
+  var lastScroll = 0;
+  window.addEventListener('scroll', function() {
+    if (window.innerWidth > 600) return;
+    var filtersEl = document.querySelector('.filters');
+    if (!filtersEl) return;
+    var current = window.scrollY;
+    if (current > 80 && current > lastScroll) {
+      filtersEl.classList.add('collapsed');
+    } else if (current < lastScroll - 10) {
+      filtersEl.classList.remove('collapsed');
+    }
+    lastScroll = current;
+  }, { passive: true });
 
   var grid        = document.getElementById('roster-grid');
   var loading     = document.getElementById('roster-loading');
