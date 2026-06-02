@@ -140,7 +140,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
   function initGoogleSignIn() {
     if (!window.google) { setTimeout(initGoogleSignIn, 200); return; }
     google.accounts.id.initialize({
-      client_id: 'YOUR_GOOGLE_CLIENT_ID_HERE',
+      client_id: '144149890711-98vset3got810866959rf6at97gia49k.apps.googleusercontent.com',
       callback: function(response) {
         verifyAndStore(response.credential);
       }
