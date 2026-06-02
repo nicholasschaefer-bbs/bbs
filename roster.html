@@ -28,7 +28,7 @@ body { font-family: 'Barlow', 'Helvetica Neue', Arial, sans-serif !important; ba
 .filters.collapsed .filter-group label { display: none; }
 .filters.collapsed .filter-group select, .filters.collapsed .filter-group input { font-size: 11px; padding: 3px 5px; width: 90px; }
 .filters.collapsed .filter-reset { margin-top: 0; font-size: 10px; padding: 3px 2px; }
-@media (min-width: 601px) { .filters.collapsed { padding: 1rem 2rem; gap: 12px; } .filters.collapsed .filter-group label { display: block; } .filters.collapsed .filter-group select, .filters.collapsed .filter-group input { font-size: 13px; padding: 6px 10px; width: 160px; } }
+@media (min-width: 601px) { .filters { display: flex; flex-wrap: wrap; } .filters.collapsed { padding: 1rem 2rem; gap: 12px; } .filters.collapsed .filter-group label { display: block; } .filters.collapsed .filter-group select, .filters.collapsed .filter-group input { font-size: 13px; padding: 6px 10px; width: 160px; } }
 .filter-group { display: flex; flex-direction: column; gap: 4px; }
 .filter-group label { font-size: 11px; color: var(--yale); font-family: var(--condensed); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
 .filter-group select, .filter-group input { font-family: var(--sans); font-size: 13px; padding: 6px 10px; border: 2px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); outline: none; width: 160px; }
@@ -82,9 +82,17 @@ body { font-family: 'Barlow', 'Helvetica Neue', Arial, sans-serif !important; ba
 @keyframes spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 600px) {
-  .site-header, .filters, .roster-wrap { padding-left: 1rem; padding-right: 1rem; }
+  .site-header, .roster-wrap { padding-left: 1rem; padding-right: 1rem; }
   .roster-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
-  .filters { top: 0; }
+  .filters { top: 0; padding: 0.6rem 0.75rem; gap: 6px; display: grid; grid-template-columns: 1fr 1fr; }
+  .filters .filter-group { width: 100%; }
+  .filters .filter-group select, .filters .filter-group input { width: 100%; font-size: 12px; padding: 5px 6px; }
+  .filters .filter-group label { font-size: 10px; }
+  .filters .filter-reset { grid-column: span 2; text-align: center; margin-top: 2px; }
+  .filters.collapsed { padding: 0.4rem 0.75rem; gap: 4px; display: grid; grid-template-columns: 1fr 1fr; }
+  .filters.collapsed .filter-group label { display: none; }
+  .filters.collapsed .filter-group select, .filters.collapsed .filter-group input { font-size: 11px; padding: 3px 5px; width: 100%; }
+  .filters.collapsed .filter-reset { grid-column: span 2; margin-top: 0; font-size: 10px; text-align: center; }
 }
 </style>
 </head>
