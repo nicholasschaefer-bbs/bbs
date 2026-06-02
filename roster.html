@@ -288,14 +288,21 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       var partySlug = party.toLowerCase().replace(/\s+/g, '-');
       partyTag.className = 'tag party-' + partySlug;
       partyTag.textContent = party;
-      if (partySlug === 'federalist') {
+      if (party.toLowerCase().indexOf('federalist') > -1) {
         partyTag.style.background = '#c4012f';
-        partyTag.style.color = '#fff';
+        partyTag.style.color = '#ffffff';
         partyTag.style.borderColor = '#c4012f';
-      } else if (partySlug === 'nationalist') {
+        partyTag.style.setProperty('background-color', '#c4012f', 'important');
+        partyTag.style.setProperty('color', '#ffffff', 'important');
+      } else if (party.toLowerCase().indexOf('nationalist') > -1) {
         partyTag.style.background = '#00467f';
-        partyTag.style.color = '#fff';
+        partyTag.style.color = '#ffffff';
         partyTag.style.borderColor = '#00467f';
+        partyTag.style.setProperty('background-color', '#00467f', 'important');
+        partyTag.style.setProperty('color', '#ffffff', 'important');
+      } else {
+        partyTag.style.setProperty('background-color', '#888', 'important');
+        partyTag.style.setProperty('color', '#ffffff', 'important');
       }
       tagsDiv.appendChild(partyTag);
     }
