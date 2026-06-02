@@ -193,7 +193,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
 <div class="filters">
   <div class="filter-group">
     <label>Search</label>
-    <input type="text" id="filter-search" placeholder="Name, school...">
+    <input type="text" id="filter-search" placeholder="Name, school, file #...">
   </div>
   <div class="filter-group">
     <label>County</label>
@@ -206,6 +206,20 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
   <div class="filter-group">
     <label>Party</label>
     <select id="filter-party"><option value="">All parties</option></select>
+  </div>
+  <div class="filter-group">
+    <label>Birthday</label>
+    <select id="filter-birthday">
+      <option value="">All</option>
+      <option value="Sunday">Sunday</option>
+      <option value="Monday">Monday</option>
+      <option value="Tuesday">Tuesday</option>
+      <option value="Wednesday">Wednesday</option>
+      <option value="Thursday">Thursday</option>
+      <option value="Friday">Friday</option>
+      <option value="Saturday">Saturday</option>
+      <option value="N/A">N/A</option>
+    </select>
   </div>
   <button class="filter-reset" id="filter-reset">Reset filters</button>
 </div>
@@ -241,7 +255,8 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
   var countyEl    = document.getElementById('filter-county');
   var cityEl      = document.getElementById('filter-city');
   var partyEl     = document.getElementById('filter-party');
-  var resetBtn    = document.getElementById('filter-reset');
+  var resetBtn      = document.getElementById('filter-reset');
+  var birthdayEl   = document.getElementById('filter-birthday');
 
   // Load data — called after auth confirmed
   window.loadRoster = function() {
@@ -285,16 +300,22 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
   }
 
   function getFiltered() {
-    var q       = searchEl.value.trim().toLowerCase();
-    var county  = countyEl.value;
-    var city    = cityEl.value;
-    var party   = partyEl.value;
+    var q        = searchEl.value.trim().toLowerCase();
+    var county   = countyEl.value;
+    var city     = cityEl.value;
+    var party    = partyEl.value;
+    var birthday = birthdayEl ? birthdayEl.value : '';
     return allCitizens.filter(function(c) {
       if (county && c['County'] !== county) return false;
       if (city   && c['City']   !== city)   return false;
       if (party  && c['Party']  !== party)  return false;
+      if (birthday) {
+        if (birthday === 'N/A') { if (c.birthdayDay) return false; }
+        else { if (c.birthdayDay !== birthday) return false; }
+      }
       if (q) {
-        var hay = [c['First'], c['Last'], c['High School'], c['City'], c['County']].join(' ').toLowerCase();
+        var fileId = (c['File ID'] || '').toString().toLowerCase();
+        var hay = [c['First'], c['Last'], c['High School'], c['City'], c['County'], fileId].join(' ').toLowerCase();
         if (hay.indexOf(q) === -1) return false;
       }
       return true;
@@ -484,12 +505,12 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
   }
 
   // Filter events
-  [searchEl, countyEl, cityEl, partyEl].forEach(function(el) {
+  [searchEl, countyEl, cityEl, partyEl, birthdayEl].forEach(function(el) { if (!el) return;
     el.addEventListener('input', render);
     el.addEventListener('change', render);
   });
   resetBtn.addEventListener('click', function() {
-    searchEl.value = ''; countyEl.value = ''; cityEl.value = ''; partyEl.value = '';
+    searchEl.value = ''; countyEl.value = ''; cityEl.value = ''; partyEl.value = ''; if (birthdayEl) birthdayEl.value = '';
     render();
   });
 
