@@ -107,13 +107,6 @@ const MAX_SECONDS = 10;
       <hr class="divider">
 
       <div class="field">
-        <label class="field-label" for="pin-input">Elections PIN</label>
-        <input class="id-input" id="pin-input" type="text" placeholder="0000" autocomplete="off" inputmode="numeric" maxlength="4">
-      </div>
-
-      <hr class="divider">
-
-      <div class="field">
         <span class="field-label">Attach your citizen photo</span>
         <p class="field-hint">Tap below to attach your headshot photo.</p>
         <div class="photo-upload-area" id="photo-upload-area">
@@ -152,6 +145,17 @@ const MAX_SECONDS = 10;
         <div class="progress-bg"><div class="progress-fill" id="prog-photo-bar"></div></div>
       </div>
 
+      <hr class="divider">
+
+      <div class="field">
+        <label class="field-label" for="pin-input">Elections PIN</label>
+        <p class="field-hint">Create a unique 4-digit numerical PIN for the elections process.</p>
+        <input class="id-input" id="pin-input" type="text" placeholder="0000" autocomplete="off" inputmode="numeric" maxlength="4">
+        <div id="pin-error" style="display:none; margin-top:8px; padding:10px 14px; background:var(--danger-bg); color:var(--danger); border-left:4px solid var(--carmine); border-radius:6px; font-size:13px; font-weight:500;">
+          PIN must be exactly 4 numerical digits.
+        </div>
+      </div>
+
       <div id="status-area"></div>
       <button class="btn btn-primary" id="btn-save">Save</button>
     </div>
@@ -175,6 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var $ = function(id) { return document.getElementById(id); };
   var idInput       = $('id-input');
   var pinInput      = $('pin-input');
+  var pinError      = $('pin-error');
   var btnRecord     = $('btn-record');
   var btnRedo       = $('btn-redo');
   var btnSave       = $('btn-save');
@@ -338,9 +343,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Save
   btnSave.addEventListener('click', function() {
-    var id = idInput.value.trim();
+    var id  = idInput.value.trim();
+    var pin = pinInput ? pinInput.value.trim() : '';
     if (!id) { idInput.classList.add('error'); idInput.focus(); setStatus('error', 'Please enter your file ID number.'); return; }
     idInput.classList.remove('error');
+    if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+      if (pinInput) pinInput.classList.add('error');
+      if (pinError) pinError.style.display = 'block';
+      if (pinInput) pinInput.focus();
+      return;
+    }
+    if (pinInput) pinInput.classList.remove('error');
+    if (pinError) pinError.style.display = 'none';
     if (!audioBlob) { setStatus('error', 'Please record your name before saving.'); return; }
     if (!SCRIPT_URL || SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') { setStatus('error', 'Setup required: add your Apps Script URL to the config.'); return; }
 
@@ -379,7 +393,7 @@ document.addEventListener('DOMContentLoaded', function() {
           successScreen.style.display = 'block';
           successMsg.textContent = 'ID ' + id + (photoFile ? ' — audio + photo saved.' : ' — audio saved.');
           setTimeout(function() {
-            idInput.value = ''; if (pinInput) pinInput.value = ''; audioBlob = null; photoFile = null;
+            idInput.value = ''; if (pinInput) { pinInput.value = ''; pinInput.classList.remove('error'); } if (pinError) pinError.style.display = 'none'; audioBlob = null; photoFile = null;
             playback.style.display = 'none'; playback.src = '';
             btnRedo.style.display = 'none';
             photoPreviewW.style.display = 'none'; photoUpArea.style.display = '';
