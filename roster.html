@@ -360,8 +360,26 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       }
       var stateProc = stateProcessEl ? stateProcessEl.value : '';
       if (stateProc) {
-        var val2 = (c[stateProc] || '').toString().toUpperCase();
-        if (val2 !== 'TRUE') return false;
+        var cabinetRoles     = ['Governor','Lt. Governor','Sec. of State','State Treasurer','Superintendent','Attorney General'];
+        var legislatureRoles = ['State Assembly','State Senate'];
+        var leadershipRoles  = ['Party Chair','Party Secretary','Party Campaign Manager'];
+        var checkRoles = function(roles) {
+          return roles.some(function(r) {
+            var v = c[r];
+            return v === true || v === 'true' || v === 'TRUE' || v === 'True' || v === '1' || v === 1;
+          });
+        };
+        if (stateProc === '__state_cabinet') {
+          if (!checkRoles(cabinetRoles)) return false;
+        } else if (stateProc === '__state_legislature') {
+          if (!checkRoles(legislatureRoles)) return false;
+        } else if (stateProc === '__party_leadership') {
+          if (!checkRoles(leadershipRoles)) return false;
+        } else {
+          var sv = c[stateProc];
+          var isSv = sv === true || sv === 'true' || sv === 'TRUE' || sv === 'True' || sv === '1' || sv === 1;
+          if (!isSv) return false;
+        }
       }
       if (q) {
         var fileId = (c['File ID'] || '').toString().toLowerCase();
@@ -509,12 +527,12 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
     // State government tags with role-specific colors
     var partyColor = isFed ? '#c4012f' : (isNat ? '#00467f' : '#888888');
     var stateTagDefs = [
-      { key: 'Mayor',                  label: '🔑 Mayor',   bg: '#0181c7' },
+      { key: 'Mayor',                  label: '🎩 Mayor',   bg: '#0181c7' },
       { key: 'School Board',           label: '📚 SB',      bg: '#2e97a0' },
       { key: 'State Assembly',         label: '🏛️ REP',     bg: '#8071d4' },
       { key: 'State Senate',           label: '🏛️ SEN',     bg: '#8071d4' },
-      { key: 'State Supreme Court',    label: '⚖️ SCOBBS',  bg: '#c24497' },
-      { key: 'Chief Justice',           label: '⚖️ CHIEF',   bg: '#c24497' },
+      { key: 'State Supreme Court',    label: '⚖️ SCOBBS',  bg: '#fe8f13' },
+      { key: 'Chief Justice',           label: '⚖️ CHIEF',   bg: '#fe8f13' },
       { key: 'Party Delegate',         label: '🪪 DEL',     bg: partyColor },
       { key: 'Party Chair',            label: '🪑 CHAIR',   bg: partyColor },
       { key: 'Party Secretary',        label: '📝 SEC',     bg: partyColor },
