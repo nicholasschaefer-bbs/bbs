@@ -112,6 +112,8 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
 
   function hideGate() {
     document.getElementById('auth-gate').style.display = 'none';
+    // Trigger roster load now that we have a valid token
+    if (window.loadRoster) window.loadRoster();
   }
 
   function showError() {
@@ -160,8 +162,13 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       fetch(SCRIPT_URL + '?action=verify&token=' + encodeURIComponent(cached))
         .then(function(r) { return r.json(); })
         .then(function(data) {
-          if (data.email) { hideGate(); }
-          else { try { localStorage.removeItem(TOKEN_KEY); } catch(e) {} initGoogleSignIn(); }
+          if (data.email) {
+            document.getElementById('auth-gate').style.display = 'none';
+            if (window.loadRoster) window.loadRoster();
+          } else {
+            try { localStorage.removeItem(TOKEN_KEY); } catch(e) {}
+            initGoogleSignIn();
+          }
         })
         .catch(function() { initGoogleSignIn(); });
     } else {
@@ -236,21 +243,25 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
   var partyEl     = document.getElementById('filter-party');
   var resetBtn    = document.getElementById('filter-reset');
 
-  // Load data
-  fetch(SCRIPT_URL + '?action=roster&token=' + encodeURIComponent(window.getAuthToken ? window.getAuthToken() : ''))
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.error) throw new Error(data.error);
-      allCitizens = data.citizens || [];
-      loading.style.display = 'none';
-      populateFilters();
-      render();
-    })
-    .catch(function(err) {
-      loading.style.display = 'none';
-      errorDiv.style.display = 'block';
-      errorMsg.textContent = err.message || 'Unknown error. Check your Apps Script URL.';
-    });
+  // Load data — called after auth confirmed
+  window.loadRoster = function() {
+    loading.style.display = 'flex';
+    errorDiv.style.display = 'none';
+    fetch(SCRIPT_URL + '?action=roster&token=' + encodeURIComponent(window.getAuthToken ? window.getAuthToken() : ''))
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.error) throw new Error(data.error);
+        allCitizens = data.citizens || [];
+        loading.style.display = 'none';
+        populateFilters();
+        render();
+      })
+      .catch(function(err) {
+        loading.style.display = 'none';
+        errorDiv.style.display = 'block';
+        errorMsg.textContent = err.message || 'Unknown error. Check your Apps Script URL.';
+      });
+  };
 
   function populateFilters() {
     var counties = {}, cities = {}, parties = {};
