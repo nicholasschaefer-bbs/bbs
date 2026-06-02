@@ -49,8 +49,9 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 
 .card-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
 .tag { font-family: var(--sans); font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border); color: var(--muted); background: var(--bg); text-transform: uppercase; letter-spacing: 0.04em; }
-.tag.party-federalist { border-color: var(--carmine); color: #fff; background: var(--carmine); }
-.tag.party-nationalist { border-color: var(--yale); color: #fff; background: var(--yale); }
+.tag.party-federalist { border-color: var(--carmine); color: #fff; background: var(--carmine); font-weight: 700; }
+.tag.party-nationalist { border-color: var(--yale); color: #fff; background: var(--yale); font-weight: 700; }
+.tag.party-none { border-color: var(--border); color: var(--muted); background: var(--bg); }
 .tag.party-democrat { border-color: var(--steel); color: var(--steel); background: var(--success-bg); }
 .tag.party-republican { border-color: var(--carmine); color: var(--carmine); background: #fde8ed; }
 .tag.party-independent { border-color: var(--gold); color: #7a6000; background: #fffbe6; }
@@ -282,11 +283,22 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       fidTag.textContent = '#' + fileId;
       tagsDiv.appendChild(fidTag);
     }
-    // Always show party debug - show raw value
-    var partyTag = document.createElement('span');
-    partyTag.className = 'tag party-' + (party ? party.toLowerCase().replace(/\s+/g, '-') : 'none');
-    partyTag.textContent = party ? party : '(no party: ' + JSON.stringify(c['Party']) + ')';
-    tagsDiv.appendChild(partyTag);
+    if (party) {
+      var partyTag = document.createElement('span');
+      var partySlug = party.toLowerCase().replace(/\s+/g, '-');
+      partyTag.className = 'tag party-' + partySlug;
+      partyTag.textContent = party;
+      if (partySlug === 'federalist') {
+        partyTag.style.background = '#c4012f';
+        partyTag.style.color = '#fff';
+        partyTag.style.borderColor = '#c4012f';
+      } else if (partySlug === 'nationalist') {
+        partyTag.style.background = '#00467f';
+        partyTag.style.color = '#fff';
+        partyTag.style.borderColor = '#00467f';
+      }
+      tagsDiv.appendChild(partyTag);
+    }
     body.appendChild(tagsDiv);
 
     // Audio
