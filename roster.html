@@ -16,16 +16,18 @@ body { font-family: 'Barlow', 'Helvetica Neue', Arial, sans-serif !important; ba
 
 /* Header */
 .site-header { background: #0181c7; border-bottom: 4px solid var(--gold); padding: 1.25rem 2rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; }
+@media (max-width: 600px) { .site-header { position: relative; } }
 .site-header h1 { font-family: var(--condensed); font-size: 24px; font-weight: 700; letter-spacing: 0.06em; color: #ffffff; text-transform: uppercase; }
 .site-header .label { font-family: var(--condensed); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #ffffff; font-weight: 600; }
 .citizen-count { font-family: var(--condensed); font-size: 13px; color: #ffffff; letter-spacing: 0.06em; text-transform: uppercase; }
 
 /* Filters */
 .filters { background: var(--surface); border-bottom: 3px solid var(--border); padding: 1rem 2rem; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; position: sticky; top: 73px; z-index: 999; transition: padding 0.25s ease, gap 0.25s ease; }
-.filters.collapsed { padding: 0.4rem 1rem; gap: 6px; }
+@media (max-width: 600px) { .filters { top: 52px; } }
+.filters.collapsed { padding: 0.4rem 0.75rem; gap: 5px; }
 .filters.collapsed .filter-group label { display: none; }
-.filters.collapsed .filter-group select, .filters.collapsed .filter-group input { font-size: 11px; padding: 4px 6px; width: 100px; }
-.filters.collapsed .filter-reset { margin-top: 0; font-size: 11px; }
+.filters.collapsed .filter-group select, .filters.collapsed .filter-group input { font-size: 11px; padding: 3px 5px; width: 90px; }
+.filters.collapsed .filter-reset { margin-top: 0; font-size: 10px; padding: 3px 2px; }
 @media (min-width: 601px) { .filters.collapsed { padding: 1rem 2rem; gap: 12px; } .filters.collapsed .filter-group label { display: block; } .filters.collapsed .filter-group select, .filters.collapsed .filter-group input { font-size: 13px; padding: 6px 10px; width: 160px; } }
 .filter-group { display: flex; flex-direction: column; gap: 4px; }
 .filter-group label { font-size: 11px; color: var(--yale); font-family: var(--condensed); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
@@ -82,6 +84,7 @@ body { font-family: 'Barlow', 'Helvetica Neue', Arial, sans-serif !important; ba
 @media (max-width: 600px) {
   .site-header, .filters, .roster-wrap { padding-left: 1rem; padding-right: 1rem; }
   .roster-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+  .filters { top: 0; }
 }
 </style>
 </head>
@@ -290,12 +293,15 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
   window.addEventListener('scroll', function() {
     if (window.innerWidth > 600) return;
     var filtersEl = document.querySelector('.filters');
+    var headerEl  = document.querySelector('.site-header');
     if (!filtersEl) return;
     var current = window.scrollY;
-    if (current > 80 && current > lastScroll) {
+    if (current > 60 && current > lastScroll) {
       filtersEl.classList.add('collapsed');
+      if (headerEl) headerEl.style.display = 'none';
     } else if (current < lastScroll - 10) {
       filtersEl.classList.remove('collapsed');
+      if (headerEl) headerEl.style.display = '';
     }
     lastScroll = current;
   }, { passive: true });
@@ -309,12 +315,15 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
   window.addEventListener('scroll', function() {
     if (window.innerWidth > 600) return;
     var filtersEl = document.querySelector('.filters');
+    var headerEl  = document.querySelector('.site-header');
     if (!filtersEl) return;
     var current = window.scrollY;
-    if (current > 80 && current > lastScroll) {
+    if (current > 60 && current > lastScroll) {
       filtersEl.classList.add('collapsed');
+      if (headerEl) headerEl.style.display = 'none';
     } else if (current < lastScroll - 10) {
       filtersEl.classList.remove('collapsed');
+      if (headerEl) headerEl.style.display = '';
     }
     lastScroll = current;
   }, { passive: true });
