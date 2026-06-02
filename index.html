@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Badger Boys State Check-in</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f5f4f0; --surface: #fff; --border: #e2e0d8;
+    --text: #1a1916; --muted: #8a8880; --accent: #1a1916;
+    --success: #2d6a4f; --success-bg: #d8f3dc;
+    --danger: #9b2335; --danger-bg: #fde8eb; --red: #c0392b;
+    --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
+  }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem 4rem; }
+  .station { width: 100%; max-width: 480px; }
+  .header { text-align: center; margin-bottom: 2rem; }
+  .header .label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .header h1 { font-size: 24px; font-weight: 300; letter-spacing: -0.02em; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; }
+  .field { margin-bottom: 1.75rem; }
+  .field-label { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 8px; display: block; }
+  .field-hint { font-size: 13px; color: var(--muted); margin-bottom: 10px; line-height: 1.5; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 1.75rem 0; }
+  .id-input { width: 100%; font-family: var(--mono); font-size: 32px; font-weight: 500; letter-spacing: 0.08em; padding: 14px 20px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s; text-align: center; }
+  .id-input:focus { border-color: var(--accent); }
+  .id-input::placeholder { color: var(--border); }
+  .id-input.error { border-color: var(--red); }
+  .photo-upload-area { border: 1.5px dashed var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; cursor: pointer; transition: border-color 0.15s, background 0.15s; position: relative; }
+  .photo-upload-area:hover { border-color: var(--accent); background: var(--bg); }
+  .photo-upload-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .upload-icon { font-size: 26px; margin-bottom: 6px; }
+  .upload-label { font-size: 14px; font-weight: 500; }
+  .upload-hint { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .photo-preview-wrap { border-radius: 10px; overflow: hidden; border: 1px solid var(--border); display: none; position: relative; }
+  .photo-preview-wrap img { width: 100%; max-height: 220px; object-fit: cover; display: block; }
+  .photo-retake { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.55); color: #fff; border: none; border-radius: 6px; padding: 5px 10px; font-size: 12px; font-family: var(--sans); cursor: pointer; }
+  .waveform-wrap { height: 56px; border-radius: 8px; background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 0 12px; margin-bottom: 10px; overflow: hidden; }
+  .waveform-wrap canvas { width: 100%; height: 100%; display: none; }
+  .waveform-idle { font-family: var(--mono); font-size: 12px; color: var(--border); letter-spacing: 0.08em; }
+  .timer { font-family: var(--mono); font-size: 12px; color: var(--red); text-align: center; height: 18px; margin-bottom: 10px; }
+  audio { width: 100%; border-radius: 8px; outline: none; margin-top: 10px; display: none; }
+  .btn { width: 100%; padding: 14px 20px; font-family: var(--sans); font-size: 15px; font-weight: 500; border-radius: 10px; border: none; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
+  .btn:active { transform: scale(0.98); }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:not(:disabled):hover { opacity: 0.85; }
+  .btn-record { background: var(--accent); color: #fff; }
+  .btn-recording { background: var(--red); color: #fff; position: relative; overflow: hidden; }
+  .btn-recording::before { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.15); animation: pulse 1.4s ease-in-out infinite; border-radius: 10px; }
+  @keyframes pulse { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+  .btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); margin-top: 8px; }
+  .btn-secondary:hover { background: var(--bg); }
+  .progress-wrap { margin-bottom: 1rem; }
+  .progress-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); font-family: var(--mono); margin-bottom: 3px; }
+  .progress-bg { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 8px; }
+  .progress-fill { height: 100%; background: var(--success); border-radius: 2px; transition: width 0.3s; width: 0%; }
+  .status-box { border-radius: 10px; padding: 12px 16px; font-size: 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
+  .status-box.success { background: var(--success-bg); color: var(--success); }
+  .status-box.error { background: var(--danger-bg); color: var(--danger); }
+  .counter { text-align: center; margin-top: 1.25rem; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .success-screen { display: none; text-align: center; padding: 2rem 0; }
+  .success-screen .checkmark { font-size: 48px; margin-bottom: 1rem; }
+  .success-screen h2 { font-size: 22px; font-weight: 400; margin-bottom: 0.5rem; }
+  .success-screen p { font-size: 14px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<script>
+// ── CONFIGURATION ──────────────────────────────────────────
+// Paste your Google Apps Script Web App URL here.
+// See setup instructions at the bottom of this file.
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsOPzMzZEvt8hYdbAu8lRQx-Sk-9W9M_kIUeFNejPLn9H4DtWr4A/exec';
+const MAX_SECONDS = 10;
+// ───────────────────────────────────────────────────────────
+</script>
+
+<div class="station">
+  <div class="header">
+    <div class="label">Check-in station</div>
+    <h1>Badger Boys State</h1>
+  </div>
+
+  <div class="card">
+    <div id="main-form">
+      <div class="field">
+        <label class="field-label" for="id-input">Badger Boys State file ID number</label>
+        <input class="id-input" id="id-input" type="text" placeholder="000" autocomplete="off" inputmode="numeric" maxlength="3">
+      </div>
+
+      <hr class="divider">
+
+      <div class="field">
+        <span class="field-label">Attach your citizen photo</span>
+        <p class="field-hint">Tap below to attach your headshot photo.</p>
+        <div class="photo-upload-area" id="photo-upload-area">
+          <input type="file" id="photo-input" accept="image/*">
+          <div class="upload-icon">&#128247;</div>
+          <div class="upload-label">Tap to take or choose a photo</div>
+          <div class="upload-hint">Choose "Take Photo" or "Photo Library"</div>
+        </div>
+        <div class="photo-preview-wrap" id="photo-preview-wrap">
+          <img id="photo-preview" src="" alt="Your photo">
+          <button class="photo-retake" id="photo-retake">Retake</button>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="field">
+        <span class="field-label">Record your name pronunciation</span>
+        <p class="field-hint">Press "Start recording" and clearly state your full name (first + last) as you would like it pronounced.</p>
+        <div class="waveform-wrap">
+          <canvas id="waveform" width="400" height="56"></canvas>
+          <span id="waveform-idle" class="waveform-idle">waiting...</span>
+        </div>
+        <div class="timer" id="timer"></div>
+        <button class="btn btn-record" id="btn-record">&#9210; Start recording</button>
+        <audio id="playback" controls></audio>
+        <button class="btn btn-secondary" id="btn-redo" style="display:none;">&#8617; Record again</button>
+      </div>
+
+      <hr class="divider">
+
+      <div id="progress-area" style="display:none;" class="progress-wrap">
+        <div class="progress-row"><span>Audio</span><span id="prog-audio-pct">0%</span></div>
+        <div class="progress-bg"><div class="progress-fill" id="prog-audio-bar"></div></div>
+        <div class="progress-row"><span>Photo</span><span id="prog-photo-pct">0%</span></div>
+        <div class="progress-bg"><div class="progress-fill" id="prog-photo-bar"></div></div>
+      </div>
+
+      <div id="status-area"></div>
+      <button class="btn btn-primary" id="btn-save">Save</button>
+    </div>
+
+    <div class="success-screen" id="success-screen">
+      <div class="checkmark">&#10003;</div>
+      <h2>All done!</h2>
+      <p id="success-msg"></p>
+    </div>
+  </div>
+
+  <div class="counter" id="counter"></div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var mediaRecorder = null, audioChunks = [], audioBlob = null;
+  var photoFile = null, timerInterval = null, animFrame = null, analyser = null;
+  var sessionCount = 0, isRecording = false;
+
+  var $ = function(id) { return document.getElementById(id); };
+  var idInput       = $('id-input');
+  var btnRecord     = $('btn-record');
+  var btnRedo       = $('btn-redo');
+  var btnSave       = $('btn-save');
+  var playback      = $('playback');
+  var timerEl       = $('timer');
+  var statusArea    = $('status-area');
+  var waveCanvas    = $('waveform');
+  var waveIdle      = $('waveform-idle');
+  var counterEl     = $('counter');
+  var photoInput    = $('photo-input');
+  var photoUpArea   = $('photo-upload-area');
+  var photoPreviewW = $('photo-preview-wrap');
+  var photoPreview  = $('photo-preview');
+  var photoRetake   = $('photo-retake');
+  var progArea      = $('progress-area');
+  var progAudioBar  = $('prog-audio-bar');
+  var progAudioPct  = $('prog-audio-pct');
+  var progPhotoBar  = $('prog-photo-bar');
+  var progPhotoPct  = $('prog-photo-pct');
+  var mainForm      = $('main-form');
+  var successScreen = $('success-screen');
+  var successMsg    = $('success-msg');
+
+  // Photo
+  photoInput.addEventListener('change', function() {
+    var f = photoInput.files[0]; if (!f) return;
+    photoFile = f;
+    photoPreview.src = URL.createObjectURL(f);
+    photoUpArea.style.display = 'none';
+    photoPreviewW.style.display = 'block';
+  });
+  photoRetake.addEventListener('click', function() {
+    photoFile = null; photoPreview.src = '';
+    photoPreviewW.style.display = 'none';
+    photoUpArea.style.display = '';
+    photoInput.value = '';
+  });
+
+  // Recording — use audio/mp4 on Safari, webm elsewhere
+  function getSupportedMimeType() {
+    var types = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm', 'audio/ogg'];
+    for (var i = 0; i < types.length; i++) {
+      if (MediaRecorder.isTypeSupported(types[i])) return types[i];
+    }
+    return '';
+  }
+
+  btnRecord.addEventListener('click', function() { isRecording ? stopRec() : startRec(); });
+  btnRedo.addEventListener('click', function() {
+    audioBlob = null;
+    playback.style.display = 'none'; playback.src = '';
+    btnRedo.style.display = 'none';
+    waveCanvas.style.display = 'none'; waveIdle.style.display = '';
+    waveIdle.textContent = 'waiting...';
+    btnRecord.textContent = 'Start recording'; btnRecord.className = 'btn btn-record';
+  });
+
+  function startRec() {
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+      var audioCtx = new AudioContext();
+      analyser = audioCtx.createAnalyser(); analyser.fftSize = 128;
+      audioCtx.createMediaStreamSource(stream).connect(analyser);
+      waveIdle.style.display = 'none'; waveCanvas.style.display = 'block'; drawWave();
+
+      audioChunks = [];
+      var mimeType = getSupportedMimeType();
+      var options = mimeType ? { mimeType: mimeType } : {};
+      mediaRecorder = new MediaRecorder(stream, options);
+      mediaRecorder.ondataavailable = function(e) { if (e.data.size > 0) audioChunks.push(e.data); };
+      mediaRecorder.onstop = onStop;
+      mediaRecorder.start(); isRecording = true;
+      btnRecord.textContent = 'Stop recording'; btnRecord.className = 'btn btn-recording';
+
+      var ms = 0;
+      timerEl.textContent = '0.0s / ' + MAX_SECONDS + 's';
+      timerInterval = setInterval(function() {
+        ms += 100;
+        timerEl.textContent = (ms/1000).toFixed(1) + 's / ' + MAX_SECONDS + 's';
+        if (ms >= MAX_SECONDS * 1000) stopRec();
+      }, 100);
+    }).catch(function() {
+      setStatus('error', 'Microphone access denied. Please allow mic access in Safari settings.');
+    });
+  }
+
+  function stopRec() {
+    if (!mediaRecorder || mediaRecorder.state === 'inactive') return;
+    mediaRecorder.stop(); mediaRecorder.stream.getTracks().forEach(function(t) { t.stop(); });
+    isRecording = false; clearInterval(timerInterval); timerEl.textContent = '';
+    cancelAnimationFrame(animFrame);
+    btnRecord.textContent = 'Start recording'; btnRecord.className = 'btn btn-record';
+    waveCanvas.getContext('2d').clearRect(0, 0, waveCanvas.width, waveCanvas.height);
+    waveCanvas.style.display = 'none'; waveIdle.style.display = '';
+    waveIdle.textContent = 'recorded';
+  }
+
+  function onStop() {
+    var mimeType = mediaRecorder.mimeType || 'audio/mp4';
+    audioBlob = new Blob(audioChunks, { type: mimeType });
+    var url = URL.createObjectURL(audioBlob);
+    playback.src = url;
+    playback.style.display = 'block';
+    btnRedo.style.display = 'block';
+  }
+
+  function drawWave() {
+    var ctx = waveCanvas.getContext('2d');
+    var data = new Uint8Array(analyser.frequencyBinCount);
+    function r() {
+      animFrame = requestAnimationFrame(r);
+      analyser.getByteTimeDomainData(data);
+      ctx.clearRect(0, 0, waveCanvas.width, waveCanvas.height);
+      ctx.strokeStyle = '#c0392b'; ctx.lineWidth = 2; ctx.beginPath();
+      var sw = waveCanvas.width / data.length; var x = 0;
+      for (var i = 0; i < data.length; i++) {
+        var y = (data[i]/128) * waveCanvas.height / 2;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        x += sw;
+      }
+      ctx.lineTo(waveCanvas.width, waveCanvas.height/2); ctx.stroke();
+    }
+    r();
+  }
+
+  // Upload via Apps Script (no sign-in needed)
+  function uploadFile(blob, filename, progressBar, progressPct) {
+    return new Promise(function(resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function() {
+        var base64 = reader.result.split(',')[1];
+        var p = 0;
+        var tick = setInterval(function() {
+          p = Math.min(p + 15, 85);
+          progressBar.style.width = p + '%';
+          progressPct.textContent = p + '%';
+        }, 200);
+
+        var ext = filename.split('.').pop();
+        var mimeMap = { mp4: 'audio/mp4', webm: 'audio/webm', ogg: 'audio/ogg', m4a: 'audio/mp4', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', heic: 'image/heic', heif: 'image/heif' };
+        var mimeType = blob.type || mimeMap[ext] || 'application/octet-stream';
+
+        fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ filename: filename, mimeType: mimeType, data: base64 })
+        }).then(function() {
+          clearInterval(tick);
+          progressBar.style.width = '100%';
+          progressPct.textContent = '100%';
+          resolve({ success: true });
+        }).catch(function(err) {
+          clearInterval(tick);
+          progressPct.textContent = 'failed';
+          reject(err);
+        });
+      };
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  // Save
+  btnSave.addEventListener('click', function() {
+    var id = idInput.value.trim();
+    if (!id) { idInput.classList.add('error'); idInput.focus(); setStatus('error', 'Please enter your file ID number.'); return; }
+    idInput.classList.remove('error');
+    if (!audioBlob) { setStatus('error', 'Please record your name before saving.'); return; }
+    if (!SCRIPT_URL || SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') { setStatus('error', 'Setup required: add your Apps Script URL to the config.'); return; }
+
+    btnSave.disabled = true; statusArea.innerHTML = '';
+    progArea.style.display = 'block';
+    progAudioBar.style.width = '0%'; progAudioPct.textContent = '0%';
+    progPhotoBar.style.width = '0%'; progPhotoPct.textContent = '0%';
+
+    var audioExt = (mediaRecorder && mediaRecorder.mimeType && mediaRecorder.mimeType.includes('mp4')) ? 'm4a' : 'webm';
+    var errors = [];
+
+    uploadFile(audioBlob, id + '.' + audioExt, progAudioBar, progAudioPct)
+      .catch(function(e) { errors.push('Audio: ' + e.message); })
+      .then(function() {
+        if (!photoFile) {
+          progPhotoBar.style.width = '100%'; progPhotoPct.textContent = 'skipped';
+          return Promise.resolve();
+        }
+        var ext = photoFile.name.includes('.') ? photoFile.name.split('.').pop().toLowerCase() : 'jpg';
+        return uploadFile(photoFile, id + '.' + ext, progPhotoBar, progPhotoPct)
+          .catch(function(e) { errors.push('Photo: ' + e.message); });
+      })
+      .then(function() {
+        if (!errors.length) {
+          sessionCount++;
+          counterEl.textContent = sessionCount + ' check-in' + (sessionCount === 1 ? '' : 's') + ' saved this session';
+          mainForm.style.display = 'none';
+          successScreen.style.display = 'block';
+          successMsg.textContent = 'ID ' + id + (photoFile ? ' — audio + photo saved.' : ' — audio saved.');
+          setTimeout(function() {
+            idInput.value = ''; audioBlob = null; photoFile = null;
+            playback.style.display = 'none'; playback.src = '';
+            btnRedo.style.display = 'none';
+            photoPreviewW.style.display = 'none'; photoUpArea.style.display = '';
+            photoInput.value = ''; photoPreview.src = '';
+            waveCanvas.style.display = 'none'; waveIdle.style.display = '';
+            waveIdle.textContent = 'waiting...';
+            progArea.style.display = 'none'; statusArea.innerHTML = '';
+            btnSave.disabled = false;
+            mainForm.style.display = 'block';
+            successScreen.style.display = 'none';
+            idInput.focus();
+          }, 3000);
+        } else {
+          progArea.style.display = 'none';
+          setStatus('error', 'Upload failed: ' + errors.join(' | ') + '. Please try again.');
+          btnSave.disabled = false;
+        }
+      });
+  });
+
+  function setStatus(t, m) {
+    statusArea.innerHTML = '<div class="status-box ' + t + '"><span>' + m + '</span></div>';
+  }
+});
+</script>
+
+<!--
+=============================================================
+  SETUP INSTRUCTIONS — read carefully, two parts
+=============================================================
+
+PART 1 — Create the Google Apps Script backend (5 minutes)
+------------------------------------------------------------
+This replaces OAuth. The script runs on Google's servers and
+saves files to your Drive folder without any user sign-in.
+
+1. Go to script.google.com
+2. Click "New project"
+3. Delete the existing code and paste this:
+
+---------- COPY FROM HERE ----------
+const FOLDER_ID = '1PqEW9br43DUsrCXZMOxN4aNBJhdEr9d0';
+
+function doPost(e) {
+  try {
+    var payload = JSON.parse(e.postData.contents);
+    var folder = DriveApp.getFolderById(FOLDER_ID);
+    var decoded = Utilities.base64Decode(payload.data);
+    var blob = Utilities.newBlob(decoded, payload.mimeType, payload.filename);
+    folder.createFile(blob);
+    return ContentService
+      .createTextOutput(JSON.stringify({ success: true }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ error: err.message }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+---------- COPY TO HERE ----------
+
+4. Click Deploy > New deployment
+5. Type: Web app
+6. Description: Name Recorder
+7. Execute as: Me
+8. Who has access: Anyone
+9. Click Deploy > Authorize > Allow
+10. Copy the Web app URL
+11. Paste it into SCRIPT_URL at the top of this HTML file
+
+PART 2 — Host on HTTPS (iPhone requires it)
+------------------------------------------------------------
+Drag this HTML file to netlify.com/drop
+Open the resulting URL in Safari on iPhone
+
+Files saved per citizen:
+  [ID].m4a  — name recording (Safari/iPhone)
+  [ID].jpg  — photo
+=============================================================
+-->
+</body>
+</html>
