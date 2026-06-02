@@ -281,12 +281,11 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       fidTag.textContent = '#' + fileId;
       tagsDiv.appendChild(fidTag);
     }
-    if (party) {
-      var partyTag = document.createElement('span');
-      partyTag.className = 'tag party-' + party.toLowerCase().replace(/\s+/g, '-');
-      partyTag.textContent = party;
-      tagsDiv.appendChild(partyTag);
-    }
+    // Always show party debug - show raw value
+    var partyTag = document.createElement('span');
+    partyTag.className = 'tag party-' + (party ? party.toLowerCase().replace(/\s+/g, '-') : 'none');
+    partyTag.textContent = party ? party : '(no party: ' + JSON.stringify(c['Party']) + ')';
+    tagsDiv.appendChild(partyTag);
     body.appendChild(tagsDiv);
 
     // Audio
