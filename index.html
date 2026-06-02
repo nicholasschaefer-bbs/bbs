@@ -107,6 +107,13 @@ const MAX_SECONDS = 10;
       <hr class="divider">
 
       <div class="field">
+        <label class="field-label" for="pin-input">Elections PIN</label>
+        <input class="id-input" id="pin-input" type="text" placeholder="0000" autocomplete="off" inputmode="numeric" maxlength="4">
+      </div>
+
+      <hr class="divider">
+
+      <div class="field">
         <span class="field-label">Attach your citizen photo</span>
         <p class="field-hint">Tap below to attach your headshot photo.</p>
         <div class="photo-upload-area" id="photo-upload-area">
@@ -167,6 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   var $ = function(id) { return document.getElementById(id); };
   var idInput       = $('id-input');
+  var pinInput      = $('pin-input');
   var btnRecord     = $('btn-record');
   var btnRedo       = $('btn-redo');
   var btnSave       = $('btn-save');
@@ -344,6 +352,14 @@ document.addEventListener('DOMContentLoaded', function() {
     var audioExt = (mediaRecorder && mediaRecorder.mimeType && mediaRecorder.mimeType.includes('mp4')) ? 'm4a' : 'webm';
     var errors = [];
 
+    // Save PIN to Google Sheet
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'savePin', fileId: id, pin: pin })
+    }).catch(function() {});
+
     uploadFile(audioBlob, id + '.' + audioExt, progAudioBar, progAudioPct)
       .catch(function(e) { errors.push('Audio: ' + e.message); })
       .then(function() {
@@ -363,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function() {
           successScreen.style.display = 'block';
           successMsg.textContent = 'ID ' + id + (photoFile ? ' — audio + photo saved.' : ' — audio saved.');
           setTimeout(function() {
-            idInput.value = ''; audioBlob = null; photoFile = null;
+            idInput.value = ''; if (pinInput) pinInput.value = ''; audioBlob = null; photoFile = null;
             playback.style.display = 'none'; playback.src = '';
             btnRedo.style.display = 'none';
             photoPreviewW.style.display = 'none'; photoUpArea.style.display = '';
