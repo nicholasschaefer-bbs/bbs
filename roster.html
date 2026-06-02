@@ -428,11 +428,12 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
 
     // Extracurricular emojis
     var extraEmojis = '';
-    if ((c['Band'] || '').toString().toUpperCase() === 'TRUE')                        extraEmojis += ' &#127927;'; // 🎷 saxophone
-    if ((c['Choir'] || '').toString().toUpperCase() === 'TRUE')                       extraEmojis += ' &#127908;'; // 🎤
-    if ((c['Color Guard'] || '').toString().toUpperCase() === 'TRUE')                 extraEmojis += ' &#127482;&#127480;'; // 🇺🇸
-    if ((c['Press Corps'] || '').toString().toUpperCase() === 'TRUE')                 extraEmojis += ' &#128240;'; // 📰
-    if ((c['Parks & Recreation Directors'] || '').toString().toUpperCase() === 'TRUE') extraEmojis += ' &#127966;'; // 🏞 national park
+    function isTrue(val) { return val === true || val === 'true' || val === 'TRUE' || val === 'True' || val === '1' || val === 1; }
+    if (isTrue(c['Band']))                          extraEmojis += ' &#127927;'; // 🎷
+    if (isTrue(c['Choir']))                         extraEmojis += ' &#127908;'; // 🎤
+    if (isTrue(c['Color Guard']))                   extraEmojis += ' &#127482;&#127480;'; // 🇺🇸
+    if (isTrue(c['Press Corps']))                   extraEmojis += ' &#128240;'; // 📰
+    if (isTrue(c['Parks & Recreation Directors']))  extraEmojis += ' &#127966;'; // 🏞
 
     body.innerHTML = '<div class="card-name">' + esc(name) + (birthdayDay ? ' &#127874;' : '') + extraEmojis + '</div>' +
       '<div class="card-meta">' +
