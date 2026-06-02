@@ -273,10 +273,21 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       '</div>';
 
     // Tags
-    var tags = '';
-    if (fileId) tags += '<span class="tag file-id">#' + esc(fileId) + '</span>';
-    if (party)  tags += '<span class="tag party-' + party.toLowerCase().replace(/\s+/g,'-') + '">' + esc(party) + '</span>';
-    if (tags) body.innerHTML += '<div class="card-tags">' + tags + '</div>';
+    var tagsDiv = document.createElement('div');
+    tagsDiv.className = 'card-tags';
+    if (fileId) {
+      var fidTag = document.createElement('span');
+      fidTag.className = 'tag file-id';
+      fidTag.textContent = '#' + fileId;
+      tagsDiv.appendChild(fidTag);
+    }
+    if (party) {
+      var partyTag = document.createElement('span');
+      partyTag.className = 'tag party-' + party.toLowerCase().replace(/\s+/g, '-');
+      partyTag.textContent = party;
+      tagsDiv.appendChild(partyTag);
+    }
+    body.appendChild(tagsDiv);
 
     // Audio
     var audioWrap = document.createElement('div');
