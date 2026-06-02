@@ -17,9 +17,9 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 
 /* Header */
 .site-header { background: #0181c7; border-bottom: 4px solid var(--gold); padding: 1.25rem 2rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; }
-.site-header h1 { font-family: var(--condensed); font-size: 24px; font-weight: 700; letter-spacing: 0.06em; color: var(--white); text-transform: uppercase; }
-.site-header .label { font-family: var(--condensed); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
-.citizen-count { font-family: var(--condensed); font-size: 13px; color: rgba(255,255,255,0.7); letter-spacing: 0.06em; text-transform: uppercase; }
+.site-header h1 { font-family: var(--condensed); font-size: 24px; font-weight: 700; letter-spacing: 0.06em; color: #ffffff; text-transform: uppercase; }
+.site-header .label { font-family: var(--condensed); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #ffffff; font-weight: 600; }
+.citizen-count { font-family: var(--condensed); font-size: 13px; color: #ffffff; letter-spacing: 0.06em; text-transform: uppercase; }
 
 /* Filters */
 .filters { background: var(--surface); border-bottom: 3px solid var(--border); padding: 1rem 2rem; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; position: sticky; top: 73px; z-index: 999; }
@@ -254,7 +254,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       <option value="State Treasurer" style="font-style:italic;">&#8194;&#8194;State Treasurer</option>
       <option value="Superintendent" style="font-style:italic;">&#8194;&#8194;Superintendent</option>
       <option value="Attorney General" style="font-style:italic;">&#8194;&#8194;Attorney General</option>
-      <option value="State Supreme Court">State Supreme Court</option>
+      <option value="__supreme_court">State Supreme Court</option>
       <option value="Chief Justice" style="font-style:italic;">&#8194;&#8194;Chief Justice</option>
     </select>
   </div>
@@ -369,12 +369,15 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
             return v === true || v === 'true' || v === 'TRUE' || v === 'True' || v === '1' || v === 1;
           });
         };
+        var supremeRoles = ['State Supreme Court', 'Chief Justice'];
         if (stateProc === '__state_cabinet') {
           if (!checkRoles(cabinetRoles)) return false;
         } else if (stateProc === '__state_legislature') {
           if (!checkRoles(legislatureRoles)) return false;
         } else if (stateProc === '__party_leadership') {
           if (!checkRoles(leadershipRoles)) return false;
+        } else if (stateProc === '__supreme_court') {
+          if (!checkRoles(supremeRoles)) return false;
         } else {
           var sv = c[stateProc];
           var isSv = sv === true || sv === 'true' || sv === 'TRUE' || sv === 'True' || sv === '1' || sv === 1;
@@ -525,14 +528,14 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       }
     });
     // State government tags with role-specific colors
-    var partyColor = isFed ? 'rgba(196,1,47,0.25)' : (isNat ? 'rgba(0,70,127,0.25)' : 'rgba(136,136,136,0.25)');
+    var partyColor = isFed ? 'rgba(196,1,47,0.33)' : (isNat ? 'rgba(0,70,127,0.33)' : 'rgba(136,136,136,0.33)');
     var stateTagDefs = [
       { key: 'Mayor',                  label: '🎩 Mayor',   bg: '#c24497', color: '#ffffff' },
       { key: 'School Board',           label: '📚 SB',      bg: '#2e97a0' },
       { key: 'State Assembly',         label: '🏛️ REP',     bg: '#8071d4' },
       { key: 'State Senate',           label: '🏛️ SEN',     bg: '#8071d4' },
-      { key: 'State Supreme Court',    label: '🕊️ SCOBBS',  bg: '#c15cbd' },
-      { key: 'Chief Justice',           label: '🕊️ CHIEF',   bg: '#c15cbd' },
+      { key: 'State Supreme Court',    label: '🕊️ SCOBBS',  bg: '#0181c7' },
+      { key: 'Chief Justice',           label: '🕊️ CHIEF',   bg: '#0181c7' },
       { key: 'Party Delegate',         label: '🪧 DEL',     bg: partyColor },
       { key: 'Party Chair',            label: '🪑 CHAIR',   bg: partyColor },
       { key: 'Party Secretary',        label: '📝 SEC',     bg: partyColor },
