@@ -183,9 +183,12 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
 })();
 </script>
 <header class="site-header">
-  <div>
-    <div class="label">Badger Boys State</div>
-    <h1>Citizen Roster</h1>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <img src="https://drive.google.com/uc?export=view&id=1QGTmHS8yzjxMlEw-rWb6IZY4wT_rJZqk" alt="Badger Boys State Logo" style="height:48px;width:auto;object-fit:contain;">
+    <div>
+      <div class="label">Badger Boys State</div>
+      <h1>Citizen Roster</h1>
+    </div>
   </div>
   <div class="citizen-count" id="citizen-count"></div>
 </header>
@@ -509,9 +512,9 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       var bdayTag = document.createElement('span');
       bdayTag.className = 'tag';
       bdayTag.textContent = '🎂 ' + (dayAbbrev[birthdayDay] || birthdayDay);
-      bdayTag.style.setProperty('background', 'linear-gradient(90deg,rgba(255,0,0,0.75),rgba(255,119,0,0.75),rgba(255,255,0,0.75),rgba(0,204,0,0.75),rgba(0,0,255,0.75),rgba(139,0,255,0.75))', 'important');
+      bdayTag.style.setProperty('background', 'linear-gradient(90deg,#ff3f3f,#ff993f,#ffff3f,#3fd83f,#3f3fff,#a83fff)', 'important');
       bdayTag.style.setProperty('color', '#ffffff', 'important');
-      bdayTag.style.setProperty('border', '1.5px solid rgba(139,0,255,0.75)', 'important');
+      bdayTag.style.setProperty('border', '1.5px solid #a83fff', 'important');
       bdayTag.style.setProperty('-webkit-text-stroke', '0.3px rgba(0,0,0,0.3)', 'important');
       tagsDiv.appendChild(bdayTag);
     }
@@ -535,14 +538,14 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       }
     });
     // State government tags with role-specific colors
-    var partyColor = isFed ? 'rgba(196,1,47,0.4)' : (isNat ? 'rgba(0,70,127,0.4)' : 'rgba(136,136,136,0.4)');
+    var partyColor = isFed ? '#e799ab' : (isNat ? '#99b5cb' : '#c0c0c0');
     var stateTagDefs = [
       { key: 'Mayor',                  label: '🎩 Mayor',   bg: '#d47ecf', color: '#ffffff' },
       { key: 'School Board',           label: '📚 SB',      bg: '#2e97a0' },
       { key: 'State Assembly',         label: '🏛️ REP',     bg: '#8071d4' },
       { key: 'State Senate',           label: '🏛️ SEN',     bg: '#8071d4' },
-      { key: 'State Supreme Court',    label: '📜 SCOBBS',  bg: 'rgba(1,129,199,0.85)' },
-      { key: 'Chief Justice',           label: '📜 CHIEF',   bg: 'rgba(1,129,199,0.85)' },
+      { key: 'State Supreme Court',    label: '📜 SCOBBS',  bg: '#339ad2' },
+      { key: 'Chief Justice',           label: '📜 CHIEF',   bg: '#339ad2' },
       { key: 'Party Delegate',         label: '🪧 DEL',     bg: partyColor, hideIfAny: ['Party Chair','Party Secretary','Party Campaign Manager'] },
       { key: 'Party Chair',            label: '🪑 CHAIR',   bg: partyColor },
       { key: 'Party Secretary',        label: '📝 SEC',     bg: partyColor },
@@ -553,10 +556,10 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       { key: 'State Treasurer',        label: '🦅 ST',      bg: '#fe8f13' },
       { key: 'Superintendent',         label: '🦅 SPI',     bg: '#fe8f13' },
       { key: 'Attorney General',       label: '🦅 AG',      bg: '#fe8f13' },
-      { key: 'Boys Nation Finalist',    label: '🌸 NATION',  bg: '#8B4513', color: '#ffffff', hideIfAny: ['Boys Nation Alternate','Boys Nation Selection'] },
-      { key: 'Boys Nation Alternate',   label: '🌸 NATION',  bg: '#a8b8c0', color: '#ffffff', hideIfAny: ['Boys Nation Finalist','Boys Nation Selection'] },
-      { key: 'Boys Nation Selection',   label: '🌸 NATION',  bg: '#c8962a', color: '#ffffff', hideIfAny: ['Boys Nation Finalist','Boys Nation Alternate'] },
-      { key: 'Boys Nation',             label: '🌸 NATION',  bg: '#8B4513', color: '#ffffff', hideIfAny: ['Boys Nation Finalist','Boys Nation Alternate','Boys Nation Selection'] },
+      { key: 'Boys Nation Finalist',    label: '🌸 NATION',  bg: '#a0522d', color: '#ffffff', hideIfAny: ['Boys Nation Alternate','Boys Nation Selection'] },
+      { key: 'Boys Nation Alternate',   label: '🌸 NATION',  bg: '#708090', color: '#ffffff', hideIfAny: ['Boys Nation Finalist','Boys Nation Selection'] },
+      { key: 'Boys Nation Selection',   label: '🌸 NATION',  bg: '#d4a017', color: '#ffffff', hideIfAny: ['Boys Nation Finalist','Boys Nation Alternate'] },
+      { key: 'Boys Nation',             label: '🌸 NATION',  bg: '#a0522d', color: '#ffffff', hideIfAny: ['Boys Nation Finalist','Boys Nation Alternate','Boys Nation Selection'] },
     ];
     stateTagDefs.forEach(function(st) {
       if (isTrue(c[st.key])) {
