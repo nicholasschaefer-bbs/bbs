@@ -4,66 +4,79 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Badger Boys State Check-in</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #f5f4f0; --surface: #fff; --border: #e2e0d8;
-    --text: #1a1916; --muted: #8a8880; --accent: #1a1916;
-    --success: #2d6a4f; --success-bg: #d8f3dc;
-    --danger: #9b2335; --danger-bg: #fde8eb; --red: #c0392b;
-    --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
+    --yale: #00467f;
+    --gold: #ffd700;
+    --carmine: #c4012f;
+    --steel: #0181c7;
+    --white: #ffffff;
+    --bg: #f0f4f8;
+    --surface: #ffffff;
+    --border: #ccd8e4;
+    --text: #00263f;
+    --muted: #4a6a82;
+    --accent: #00467f;
+    --success: #0181c7;
+    --success-bg: #e6f4fc;
+    --danger: #c4012f;
+    --danger-bg: #fde8ed;
+    --red: #c4012f;
+    --sans: 'Barlow', sans-serif;
+    --condensed: 'Barlow Condensed', sans-serif;
   }
-  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem 4rem; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 0 1rem 4rem; }
   .station { width: 100%; max-width: 480px; }
-  .header { text-align: center; margin-bottom: 2rem; }
-  .header .label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-  .header h1 { font-size: 24px; font-weight: 300; letter-spacing: -0.02em; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; }
+  .header { text-align: center; margin-bottom: 2rem; background: var(--yale); margin-left: -1rem; margin-right: -1rem; padding: 2rem 1rem; }
+  .header .label { font-family: var(--condensed); font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; font-weight: 600; }
+  .header h1 { font-family: var(--condensed); font-size: 32px; font-weight: 700; letter-spacing: 0.04em; color: var(--white); text-transform: uppercase; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; box-shadow: 0 2px 12px rgba(0,70,127,0.08); }
   .field { margin-bottom: 1.75rem; }
-  .field-label { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 8px; display: block; }
+  .field-label { font-size: 13px; font-weight: 600; color: var(--yale); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.06em; }
   .field-hint { font-size: 13px; color: var(--muted); margin-bottom: 10px; line-height: 1.5; }
-  .divider { border: none; border-top: 1px solid var(--border); margin: 1.75rem 0; }
-  .id-input { width: 100%; font-family: var(--mono); font-size: 32px; font-weight: 500; letter-spacing: 0.08em; padding: 14px 20px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s; text-align: center; }
-  .id-input:focus { border-color: var(--accent); }
+  .divider { border: none; border-top: 2px solid var(--gold); margin: 1.75rem 0; }
+  .id-input { width: 100%; font-family: var(--condensed); font-size: 36px; font-weight: 700; letter-spacing: 0.1em; padding: 14px 20px; border: 2px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--yale); outline: none; transition: border-color 0.15s; text-align: center; }
+  .id-input:focus { border-color: var(--steel); }
   .id-input::placeholder { color: var(--border); }
   .id-input.error { border-color: var(--red); }
-  .photo-upload-area { border: 1.5px dashed var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; cursor: pointer; transition: border-color 0.15s, background 0.15s; position: relative; }
-  .photo-upload-area:hover { border-color: var(--accent); background: var(--bg); }
+  .photo-upload-area { border: 2px dashed var(--border); border-radius: 10px; padding: 1.5rem; text-align: center; cursor: pointer; transition: border-color 0.15s, background 0.15s; position: relative; }
+  .photo-upload-area:hover { border-color: var(--steel); background: var(--bg); }
   .photo-upload-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
   .upload-icon { font-size: 26px; margin-bottom: 6px; }
-  .upload-label { font-size: 14px; font-weight: 500; }
+  .upload-label { font-size: 14px; font-weight: 600; color: var(--yale); }
   .upload-hint { font-size: 12px; color: var(--muted); margin-top: 3px; }
-  .photo-preview-wrap { border-radius: 10px; overflow: hidden; border: 1px solid var(--border); display: none; position: relative; }
+  .photo-preview-wrap { border-radius: 8px; overflow: hidden; border: 2px solid var(--gold); display: none; position: relative; }
   .photo-preview-wrap img { width: 100%; max-height: 220px; object-fit: cover; display: block; }
-  .photo-retake { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.55); color: #fff; border: none; border-radius: 6px; padding: 5px 10px; font-size: 12px; font-family: var(--sans); cursor: pointer; }
-  .waveform-wrap { height: 56px; border-radius: 8px; background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 0 12px; margin-bottom: 10px; overflow: hidden; }
+  .photo-retake { position: absolute; bottom: 8px; right: 8px; background: rgba(0,70,127,0.85); color: #fff; border: none; border-radius: 6px; padding: 5px 10px; font-size: 12px; font-family: var(--sans); font-weight: 600; cursor: pointer; }
+  .waveform-wrap { height: 56px; border-radius: 8px; background: var(--bg); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; padding: 0 12px; margin-bottom: 10px; overflow: hidden; }
   .waveform-wrap canvas { width: 100%; height: 100%; display: none; }
-  .waveform-idle { font-family: var(--mono); font-size: 12px; color: var(--border); letter-spacing: 0.08em; }
-  .timer { font-family: var(--mono); font-size: 12px; color: var(--red); text-align: center; height: 18px; margin-bottom: 10px; }
+  .waveform-idle { font-family: var(--condensed); font-size: 13px; color: var(--border); letter-spacing: 0.1em; text-transform: uppercase; }
+  .timer { font-family: var(--condensed); font-size: 13px; color: var(--carmine); text-align: center; height: 18px; margin-bottom: 10px; font-weight: 600; letter-spacing: 0.05em; }
   audio { width: 100%; border-radius: 8px; outline: none; margin-top: 10px; display: none; }
-  .btn { width: 100%; padding: 14px 20px; font-family: var(--sans); font-size: 15px; font-weight: 500; border-radius: 10px; border: none; cursor: pointer; transition: opacity 0.15s, transform 0.1s; }
+  .btn { width: 100%; padding: 14px 20px; font-family: var(--sans); font-size: 15px; font-weight: 700; border-radius: 8px; border: none; cursor: pointer; transition: opacity 0.15s, transform 0.1s; letter-spacing: 0.04em; text-transform: uppercase; }
   .btn:active { transform: scale(0.98); }
   .btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
-  .btn-primary { background: var(--accent); color: #fff; }
-  .btn-primary:not(:disabled):hover { opacity: 0.85; }
-  .btn-record { background: var(--accent); color: #fff; }
-  .btn-recording { background: var(--red); color: #fff; position: relative; overflow: hidden; }
-  .btn-recording::before { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.15); animation: pulse 1.4s ease-in-out infinite; border-radius: 10px; }
+  .btn-primary { background: var(--yale); color: var(--white); }
+  .btn-primary:not(:disabled):hover { background: var(--steel); }
+  .btn-record { background: var(--yale); color: var(--white); }
+  .btn-recording { background: var(--carmine); color: var(--white); position: relative; overflow: hidden; }
+  .btn-recording::before { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.15); animation: pulse 1.4s ease-in-out infinite; border-radius: 8px; }
   @keyframes pulse { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
-  .btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); margin-top: 8px; }
-  .btn-secondary:hover { background: var(--bg); }
+  .btn-secondary { background: transparent; color: var(--yale); border: 2px solid var(--border); margin-top: 8px; }
+  .btn-secondary:hover { border-color: var(--yale); background: var(--bg); }
   .progress-wrap { margin-bottom: 1rem; }
-  .progress-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); font-family: var(--mono); margin-bottom: 3px; }
-  .progress-bg { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 8px; }
-  .progress-fill { height: 100%; background: var(--success); border-radius: 2px; transition: width 0.3s; width: 0%; }
-  .status-box { border-radius: 10px; padding: 12px 16px; font-size: 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; }
-  .status-box.success { background: var(--success-bg); color: var(--success); }
-  .status-box.error { background: var(--danger-bg); color: var(--danger); }
-  .counter { text-align: center; margin-top: 1.25rem; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .progress-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); font-family: var(--condensed); margin-bottom: 3px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .progress-bg { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
+  .progress-fill { height: 100%; background: var(--steel); border-radius: 3px; transition: width 0.3s; width: 0%; }
+  .status-box { border-radius: 8px; padding: 12px 16px; font-size: 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; font-weight: 500; }
+  .status-box.success { background: var(--success-bg); color: var(--success); border-left: 4px solid var(--steel); }
+  .status-box.error { background: var(--danger-bg); color: var(--danger); border-left: 4px solid var(--carmine); }
+  .counter { text-align: center; margin-top: 1.25rem; font-family: var(--condensed); font-size: 12px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
   .success-screen { display: none; text-align: center; padding: 2rem 0; }
-  .success-screen .checkmark { font-size: 48px; margin-bottom: 1rem; }
-  .success-screen h2 { font-size: 22px; font-weight: 400; margin-bottom: 0.5rem; }
+  .success-screen .checkmark { font-size: 56px; margin-bottom: 1rem; color: var(--gold); }
+  .success-screen h2 { font-family: var(--condensed); font-size: 28px; font-weight: 700; color: var(--yale); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.5rem; }
   .success-screen p { font-size: 14px; color: var(--muted); }
 </style>
 </head>
