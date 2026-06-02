@@ -222,7 +222,8 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
     var school = c['High School'] || '';
     var city   = c['City']   || '';
     var county = c['County'] || '';
-    var party  = c['Party']  || '';
+    var party  = c['Party'] || c['party'] || c['PARTY'] || '';
+    party = party.trim();
     var fileId = c['File ID'] || '';
 
     var card = document.createElement('div');
