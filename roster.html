@@ -525,14 +525,14 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       }
     });
     // State government tags with role-specific colors
-    var partyColor = isFed ? '#c4012f' : (isNat ? '#00467f' : '#888888');
+    var partyColor = isFed ? 'rgba(196,1,47,0.5)' : (isNat ? 'rgba(0,70,127,0.5)' : 'rgba(136,136,136,0.5)');
     var stateTagDefs = [
       { key: 'Mayor',                  label: '🎩 Mayor',   bg: '#ffd700', color: '#00467f' },
       { key: 'School Board',           label: '📚 SB',      bg: '#2e97a0' },
       { key: 'State Assembly',         label: '🏛️ REP',     bg: '#8071d4' },
       { key: 'State Senate',           label: '🏛️ SEN',     bg: '#8071d4' },
-      { key: 'State Supreme Court',    label: '⚖️ SCOBBS',  bg: '#c15cbd' },
-      { key: 'Chief Justice',           label: '⚖️ CHIEF',   bg: '#c15cbd' },
+      { key: 'State Supreme Court',    label: '🕊️ SCOBBS',  bg: '#c15cbd' },
+      { key: 'Chief Justice',           label: '🕊️ CHIEF',   bg: '#c15cbd' },
       { key: 'Party Delegate',         label: '🪧 DEL',     bg: partyColor },
       { key: 'Party Chair',            label: '🪑 CHAIR',   bg: partyColor },
       { key: 'Party Secretary',        label: '📝 SEC',     bg: partyColor },
