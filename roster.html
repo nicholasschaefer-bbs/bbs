@@ -228,17 +228,33 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
 
     // Photo
     var photoWrap = document.createElement('div');
-    if (c.photoUrl) {
+    photoWrap.innerHTML = '<div class="card-photo-placeholder"><span class="initials">' + initials + '</span></div>';
+    if (c.photoId) {
       var img = document.createElement('img');
       img.className = 'card-photo';
       img.alt = name;
-      img.src = c.photoUrl;
-      img.onerror = function() {
-        photoWrap.innerHTML = '<div class="card-photo-placeholder"><span class="initials">' + initials + '</span></div>';
-      };
+      img.style.display = 'none';
       photoWrap.appendChild(img);
-    } else {
-      photoWrap.innerHTML = '<div class="card-photo-placeholder"><span class="initials">' + initials + '</span></div>';
+      (function(pid, i, pw) {
+        var cacheKey = 'photo_' + pid;
+        var cached = null;
+        try { cached = sessionStorage.getItem(cacheKey); } catch(e) {}
+        function showImg(dataUrl) {
+          i.src = dataUrl;
+          i.style.display = 'block';
+          var ph = pw.querySelector('.card-photo-placeholder');
+          if (ph) ph.style.display = 'none';
+        }
+        if (cached) { showImg(cached); return; }
+        fetch(SCRIPT_URL + '?action=file&id=' + pid)
+          .then(function(r) { return r.json(); })
+          .then(function(json) {
+            var dataUrl = 'data:' + json.mimeType + ';base64,' + json.data;
+            try { sessionStorage.setItem(cacheKey, dataUrl); } catch(e) {}
+            showImg(dataUrl);
+          })
+          .catch(function() {});
+      })(c.photoId, img, photoWrap);
     }
     card.appendChild(photoWrap);
 
