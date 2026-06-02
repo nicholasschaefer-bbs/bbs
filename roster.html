@@ -249,7 +249,9 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
         fetch(SCRIPT_URL + '?action=file&id=' + pid)
           .then(function(r) { return r.json(); })
           .then(function(json) {
-            var dataUrl = 'data:' + json.mimeType + ';base64,' + json.data;
+            var mime = json.mimeType || 'image/jpeg';
+            if (mime.indexOf('image') === -1) mime = 'image/jpeg';
+            var dataUrl = 'data:' + mime + ';base64,' + json.data;
             try { sessionStorage.setItem(cacheKey, dataUrl); } catch(e) {}
             showImg(dataUrl);
           })
