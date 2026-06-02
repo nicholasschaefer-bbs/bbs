@@ -211,7 +211,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
     <label>Birthday</label>
     <select id="filter-birthday">
       <option value="">All</option>
-      <option value="__bbs_birthday">BBS Birthday (any)</option>
+      <option value="__bbs_birthday">BBS Birthday</option>
       <option value="Sunday" style="font-style:italic;">&#8194;&#8194;Sunday</option>
       <option value="Monday" style="font-style:italic;">&#8194;&#8194;Monday</option>
       <option value="Tuesday" style="font-style:italic;">&#8194;&#8194;Tuesday</option>
@@ -509,12 +509,12 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
     // State government tags with role-specific colors
     var partyColor = isFed ? '#c4012f' : (isNat ? '#00467f' : '#888888');
     var stateTagDefs = [
-      { key: 'Mayor',                  label: '🏙️ Mayor',   bg: '#0181c7' },
-      { key: 'School Board',           label: '📚 SB',      bg: '#c24497' },
+      { key: 'Mayor',                  label: '🔑 Mayor',   bg: '#0181c7' },
+      { key: 'School Board',           label: '📚 SB',      bg: '#2e97a0' },
       { key: 'State Assembly',         label: '🏛️ REP',     bg: '#8071d4' },
       { key: 'State Senate',           label: '🏛️ SEN',     bg: '#8071d4' },
-      { key: 'State Supreme Court',    label: '⚖️ SCOBBS',  bg: '#2e97a0' },
-      { key: 'Chief Justice',           label: '⚖️ CHIEF',   bg: '#2e97a0' },
+      { key: 'State Supreme Court',    label: '⚖️ SCOBBS',  bg: '#c24497' },
+      { key: 'Chief Justice',           label: '⚖️ CHIEF',   bg: '#c24497' },
       { key: 'Party Delegate',         label: '🪪 DEL',     bg: partyColor },
       { key: 'Party Chair',            label: '🪑 CHAIR',   bg: partyColor },
       { key: 'Party Secretary',        label: '📝 SEC',     bg: partyColor },
