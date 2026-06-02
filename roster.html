@@ -429,13 +429,15 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
     // Extracurricular emojis
     var extraEmojis = '';
     function isTrue(val) { return val === true || val === 'true' || val === 'TRUE' || val === 'True' || val === '1' || val === 1; }
-    if (isTrue(c['Band']))                          extraEmojis += ' &#127927;'; // 🎷
-    if (isTrue(c['Choir']))                         extraEmojis += ' &#127908;'; // 🎤
-    if (isTrue(c['Color Guard']))                   extraEmojis += ' &#127482;&#127480;'; // 🇺🇸
-    if (isTrue(c['Press Corps']))                   extraEmojis += ' &#128240;'; // 📰
-    if (isTrue(c['Parks & Recreation Directors']))  extraEmojis += ' &#127966;'; // 🏞
+    var extraTags = [
+      { key: 'Band',                          label: '🎷 Band' },
+      { key: 'Choir',                         label: '🎤 Choir' },
+      { key: 'Color Guard',                   label: '🇺🇸 Color Guard' },
+      { key: 'Press Corps',                   label: '📰 Press Corps' },
+      { key: 'Parks & Recreation Directors',  label: '🏞 Parks & Rec' },
+    ];
 
-    body.innerHTML = '<div class="card-name">' + esc(name) + (birthdayDay ? ' &#127874;' : '') + extraEmojis + '</div>' +
+    body.innerHTML = '<div class="card-name">' + esc(name) + (birthdayDay ? ' &#127874;' : '') + '</div>' +
       '<div class="card-meta">' +
         (school ? '<span>' + esc(school) + '</span>' : '') +
         (city || county ? '<span>' + [city, county].filter(Boolean).map(esc).join(', ') + '</span>' : '') +
@@ -457,23 +459,48 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       partyTag.className = 'tag party-' + partySlug;
       partyTag.textContent = party;
       if (party.toLowerCase().indexOf('federalist') > -1) {
-        partyTag.style.background = '#c4012f';
-        partyTag.style.color = '#ffffff';
-        partyTag.style.borderColor = '#c4012f';
         partyTag.style.setProperty('background-color', '#c4012f', 'important');
         partyTag.style.setProperty('color', '#ffffff', 'important');
+        partyTag.style.setProperty('border-color', '#c4012f', 'important');
       } else if (party.toLowerCase().indexOf('nationalist') > -1) {
-        partyTag.style.background = '#00467f';
-        partyTag.style.color = '#ffffff';
-        partyTag.style.borderColor = '#00467f';
         partyTag.style.setProperty('background-color', '#00467f', 'important');
         partyTag.style.setProperty('color', '#ffffff', 'important');
+        partyTag.style.setProperty('border-color', '#00467f', 'important');
       } else {
         partyTag.style.setProperty('background-color', '#888', 'important');
         partyTag.style.setProperty('color', '#ffffff', 'important');
       }
       tagsDiv.appendChild(partyTag);
     }
+    // Extracurricular tags — gold background, yale blue text
+    extraTags.forEach(function(et) {
+      if (isTrue(c[et.key])) {
+        var etag = document.createElement('span');
+        etag.className = 'tag';
+        etag.textContent = et.label;
+        etag.style.setProperty('background-color', '#ffd700', 'important');
+        etag.style.setProperty('color', '#00467f', 'important');
+        etag.style.setProperty('border-color', '#ffd700', 'important');
+        tagsDiv.appendChild(etag);
+      }
+    });
+    // State process tags — steel blue background, white text
+    var stateTags = [
+      'School Board', 'State Assembly', 'State Senate', 'State Supreme Court',
+      'State Cabinet', 'State Federalist Party Delegates', 'State Nationalist Party Delegates',
+      'State Federalist Party Leadership', 'State Nationalist Party Leadership'
+    ];
+    stateTags.forEach(function(st) {
+      if (isTrue(c[st])) {
+        var stag = document.createElement('span');
+        stag.className = 'tag';
+        stag.textContent = st;
+        stag.style.setProperty('background-color', '#0181c7', 'important');
+        stag.style.setProperty('color', '#ffffff', 'important');
+        stag.style.setProperty('border-color', '#0181c7', 'important');
+        tagsDiv.appendChild(stag);
+      }
+    });
     body.appendChild(tagsDiv);
 
     // Audio
