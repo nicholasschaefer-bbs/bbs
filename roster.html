@@ -507,9 +507,9 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
     }
     // Extracurricular tags with individual colors
     var extraTagDefs = [
-      { key: 'Band',                         label: '🎷 Band',         bg: '#ffd700', color: '#00467f' },
-      { key: 'Choir',                        label: '🎤 Choir',        bg: '#ffd700', color: '#00467f' },
-      { key: 'Color Guard',                  label: '🇺🇸 Guard', bg: '#ffd700', color: '#00467f' },
+      { key: 'Band',                         label: '🎷 Band',         bg: '#0181c7', color: '#ffffff' },
+      { key: 'Choir',                        label: '🎤 Choir',        bg: '#0181c7', color: '#ffffff' },
+      { key: 'Color Guard',                  label: '🇺🇸 Guard', bg: '#0181c7', color: '#ffffff' },
       { key: 'Press Corps',                  label: '📰 Press',  bg: '#000000', color: '#ffffff' },
       { key: 'Parks & Recreation Directors', label: '🏞 Parks',  bg: '#99bc4b', color: '#ffffff' },
     ];
@@ -527,22 +527,22 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
     // State government tags with role-specific colors
     var partyColor = isFed ? '#c4012f' : (isNat ? '#00467f' : '#888888');
     var stateTagDefs = [
-      { key: 'Mayor',                  label: '🎩 Mayor',   bg: '#0181c7' },
+      { key: 'Mayor',                  label: '🎩 Mayor',   bg: '#ffd700', color: '#00467f' },
       { key: 'School Board',           label: '📚 SB',      bg: '#2e97a0' },
       { key: 'State Assembly',         label: '🏛️ REP',     bg: '#8071d4' },
       { key: 'State Senate',           label: '🏛️ SEN',     bg: '#8071d4' },
-      { key: 'State Supreme Court',    label: '⚖️ SCOBBS',  bg: '#fe8f13' },
-      { key: 'Chief Justice',           label: '⚖️ CHIEF',   bg: '#fe8f13' },
-      { key: 'Party Delegate',         label: '🪪 DEL',     bg: partyColor },
+      { key: 'State Supreme Court',    label: '⚖️ SCOBBS',  bg: '#c15cbd' },
+      { key: 'Chief Justice',           label: '⚖️ CHIEF',   bg: '#c15cbd' },
+      { key: 'Party Delegate',         label: '🪧 DEL',     bg: partyColor },
       { key: 'Party Chair',            label: '🪑 CHAIR',   bg: partyColor },
       { key: 'Party Secretary',        label: '📝 SEC',     bg: partyColor },
       { key: 'Party Campaign Manager', label: '📣 CM',      bg: partyColor },
-      { key: 'Governor',               label: '🦅 GOV',     bg: '#fe661e' },
-      { key: 'Lt. Governor',           label: '🦅 LTGOV',   bg: '#fe661e' },
-      { key: 'Sec. of State',          label: '🦅 SOS',     bg: '#fe661e' },
-      { key: 'State Treasurer',        label: '🦅 ST',      bg: '#fe661e' },
-      { key: 'Superintendent',         label: '🦅 SPI',     bg: '#fe661e' },
-      { key: 'Attorney General',       label: '🦅 AG',      bg: '#fe661e' },
+      { key: 'Governor',               label: '🦅 GOV',     bg: '#fe8f13' },
+      { key: 'Lt. Governor',           label: '🦅 LTGOV',   bg: '#fe8f13' },
+      { key: 'Sec. of State',          label: '🦅 SOS',     bg: '#fe8f13' },
+      { key: 'State Treasurer',        label: '🦅 ST',      bg: '#fe8f13' },
+      { key: 'Superintendent',         label: '🦅 SPI',     bg: '#fe8f13' },
+      { key: 'Attorney General',       label: '🦅 AG',      bg: '#fe8f13' },
     ];
     stateTagDefs.forEach(function(st) {
       if (isTrue(c[st.key])) {
@@ -550,7 +550,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
         stag.className = 'tag';
         stag.textContent = st.label;
         stag.style.setProperty('background-color', st.bg, 'important');
-        stag.style.setProperty('color', '#ffffff', 'important');
+        stag.style.setProperty('color', st.color || '#ffffff', 'important');
         stag.style.setProperty('border-color', st.bg, 'important');
         tagsDiv.appendChild(stag);
       }
