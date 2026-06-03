@@ -284,7 +284,6 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       <option value="Loaner Phone" style="font-style:italic;">&#8194;&#8194;Loaner Phone</option>
       <option value="BBS Email Support" style="font-style:italic;">&#8194;&#8194;BBS Email Support</option>
       <option value="__boys_nation">Boys Nation</option>
-      <option value="Boys Nation" style="font-style:italic;">&#8194;&#8194;Boys Nation</option>
       <option value="Boys Nation Finalist" style="font-style:italic;">&#8194;&#8194;Finalist</option>
       <option value="Boys Nation Alternate" style="font-style:italic;">&#8194;&#8194;Alternate</option>
       <option value="Boys Nation Selection" style="font-style:italic;">&#8194;&#8194;Selection</option>
@@ -661,10 +660,9 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       { key: 'BBS Email Support',    label: '📧 Email',    bg: '#06d6a0', color: '#ffffff' },
       { key: 'Samsung Scholarship',  label: '📱 Samsung',  bg: '#1428a0', color: '#ffffff' },
       { key: 'Boylan Scholarship',   label: '🚔 Boylan',   bg: '#8b0000', color: '#ffffff' },
-      { key: 'Boys Nation Finalist', label: '🌸 NATION',   bg: '#b87333', color: '#ffffff', hideIfAny: ['Boys Nation Alternate','Boys Nation Selection'] },
-      { key: 'Boys Nation Alternate',label: '🌸 NATION',   bg: '#708090', color: '#ffffff', hideIfAny: ['Boys Nation Finalist','Boys Nation Selection'] },
-      { key: 'Boys Nation Selection',label: '🌸 NATION',   bg: '#d4a017', color: '#ffffff', hideIfAny: ['Boys Nation Finalist','Boys Nation Alternate'] },
-      { key: 'Boys Nation',          label: '🌸 NATION',   bg: '#b87333', color: '#ffffff', hideIfAny: ['Boys Nation Finalist','Boys Nation Alternate','Boys Nation Selection'] },
+      { key: 'Boys Nation Finalist', label: '🌸 NATION',   bg: '#b87333', color: '#ffffff' },
+      { key: 'Boys Nation Alternate',label: '🌸 NATION',   bg: '#708090', color: '#ffffff' },
+      { key: 'Boys Nation Selection',label: '🌸 NATION',   bg: '#d4a017', color: '#ffffff' },
     ];
     miscTagDefs.forEach(function(mt) {
       if (isTrue(c[mt.key])) {
