@@ -272,10 +272,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       <option value="Attorney General" style="font-style:italic;">&#8194;&#8194;Attorney General</option>
       <option value="__supreme_court">State Supreme Court</option>
       <option value="Chief Justice" style="font-style:italic;">&#8194;&#8194;Chief Justice</option>
-      <option value="__boys_nation">Boys Nation</option>
-      <option value="Boys Nation Finalist" style="font-style:italic;">&#8194;&#8194;Finalist</option>
-      <option value="Boys Nation Alternate" style="font-style:italic;">&#8194;&#8194;Alternate</option>
-      <option value="Boys Nation Selection" style="font-style:italic;">&#8194;&#8194;Selection</option>
+
       <option value="__na_government">N/A</option>
     </select>
   </div>
@@ -458,9 +455,6 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
           if (!checkRoles(leadershipRoles)) return false;
         } else if (stateProc === '__supreme_court') {
           if (!checkRoles(supremeRoles)) return false;
-        } else if (stateProc === '__boys_nation') {
-          var bnRoles = ['Boys Nation','Boys Nation Finalist','Boys Nation Alternate','Boys Nation Selection'];
-          if (!checkRoles(bnRoles)) return false;
         } else {
           var sv = c[stateProc];
           var isSv = sv === true || sv === 'true' || sv === 'TRUE' || sv === 'True' || sv === '1' || sv === 1;
@@ -645,10 +639,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       { key: 'State Treasurer',        label: '🦅 ST',      bg: '#fe8f13' },
       { key: 'Superintendent',         label: '🦅 SPI',     bg: '#fe8f13' },
       { key: 'Attorney General',       label: '🦅 AG',      bg: '#fe8f13' },
-      { key: 'Boys Nation Finalist',    label: '🌸 NATION',  bg: '#b87333', color: '#ffffff', hideIfAny: ['Boys Nation Alternate','Boys Nation Selection'] },
-      { key: 'Boys Nation Alternate',   label: '🌸 NATION',  bg: '#708090', color: '#ffffff', hideIfAny: ['Boys Nation Finalist','Boys Nation Selection'] },
-      { key: 'Boys Nation Selection',   label: '🌸 NATION',  bg: '#d4a017', color: '#ffffff', hideIfAny: ['Boys Nation Finalist','Boys Nation Alternate'] },
-      { key: 'Boys Nation',             label: '🌸 NATION',  bg: '#b87333', color: '#ffffff', hideIfAny: ['Boys Nation Finalist','Boys Nation Alternate','Boys Nation Selection'] },
+
     ];
     stateTagDefs.forEach(function(st) {
       if (isTrue(c[st.key])) {
@@ -667,13 +658,18 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
     });
     // Miscellaneous tags
     var miscTagDefs = [
-      { key: 'Loaner',        label: '📱 Loaner',    bg: '#06d6a0', color: '#ffffff' },
-      { key: 'Email Support', label: '📧 Email',     bg: '#06d6a0', color: '#ffffff' },
-      { key: 'Samsung',       label: '📱 Samsung',   bg: '#1428a0', color: '#ffffff' },
-      { key: 'Boylan',        label: '🚔 Boylan',    bg: '#8b0000', color: '#ffffff' },
+      { key: 'Loaner',                   label: '📱 Loaner',   bg: '#06d6a0', color: '#ffffff' },
+      { key: 'Email Support',            label: '📧 Email',    bg: '#06d6a0', color: '#ffffff' },
+      { key: 'Samsung',                  label: '📱 Samsung',  bg: '#1428a0', color: '#ffffff' },
+      { key: 'Boylan',                   label: '🚔 Boylan',   bg: '#8b0000', color: '#ffffff' },
+      { key: 'Boys Nation Finalist',     label: '🌸 NATION',   bg: '#b87333', color: '#ffffff', hideIfAny: ['Boys Nation Alternate','Boys Nation Selection'] },
+      { key: 'Boys Nation Alternate',    label: '🌸 NATION',   bg: '#708090', color: '#ffffff', hideIfAny: ['Boys Nation Finalist','Boys Nation Selection'] },
+      { key: 'Boys Nation Selection',    label: '🌸 NATION',   bg: '#d4a017', color: '#ffffff', hideIfAny: ['Boys Nation Finalist','Boys Nation Alternate'] },
+      { key: 'Boys Nation',              label: '🌸 NATION',   bg: '#b87333', color: '#ffffff', hideIfAny: ['Boys Nation Finalist','Boys Nation Alternate','Boys Nation Selection'] },
     ];
     miscTagDefs.forEach(function(mt) {
       if (isTrue(c[mt.key])) {
+        if (mt.hideIfAny && mt.hideIfAny.some(function(r) { return isTrue(c[r]); })) return;
         var mtag = document.createElement('span');
         mtag.className = 'tag';
         mtag.textContent = mt.label;
@@ -764,7 +760,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
   }
 
   // Filter events
-  [searchEl, countyEl, cityEl, partyEl, birthdayEl, extracurricularEl, stateProcessEl].forEach(function(el) { if (!el) return;
+  [searchEl, countyEl, cityEl, partyEl, birthdayEl, extracurricularEl, stateProcessEl, miscEl].forEach(function(el) { if (!el) return;
     el.addEventListener('input', render);
     el.addEventListener('change', render);
   });
