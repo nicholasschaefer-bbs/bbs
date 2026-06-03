@@ -435,7 +435,6 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
         var allGovRoles = ['Mayor','School Board','Party Delegate','Party Chair','Party Secretary','Party Campaign Manager','State Assembly','State Senate','Governor','Lt. Governor','Sec. of State','State Treasurer','Superintendent','Attorney General','State Supreme Court','Chief Justice'];
         if (stateProc === '__na_government') {
           if (allGovRoles.some(function(r) { return isTrue(c[r]); })) return false;
-          return true;
         }
         var cabinetRoles     = ['Governor','Lt. Governor','Sec. of State','State Treasurer','Superintendent','Attorney General'];
         var legislatureRoles = ['State Assembly','State Senate'];
