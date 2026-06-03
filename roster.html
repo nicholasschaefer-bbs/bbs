@@ -462,7 +462,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       if (misc) {
         var isTrueCol = function(key) { return isTrue(c[key]); };
         var techKeys  = ['Loaner Phone','BBS Email Support'];
-        var bnKeys    = ['Boys Nation','Boys Nation Finalist','Boys Nation Alternate','Boys Nation Selection'];
+        var bnKeys    = ['Boys Nation Finalist','Boys Nation Alternate','Boys Nation Selection'];
         var scholKeys = ['Samsung Scholarship','Boylan Scholarship'];
         if (misc === '__technology') {
           if (!techKeys.some(function(k) { return isTrueCol(k); })) return false;
@@ -482,6 +482,8 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       return true;
     });
   }
+
+  function isTrue(val) { return val === true || val === 'true' || val === 'TRUE' || val === 'True' || val === '1' || val === 1; }
 
   window.renderRoster = function() { render(); };
   function render() {
@@ -553,7 +555,6 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
 
     // Extracurricular emojis
     var extraEmojis = '';
-    function isTrue(val) { return val === true || val === 'true' || val === 'TRUE' || val === 'True' || val === '1' || val === 1; }
     var extraTags = [
       { key: 'Band',                          label: '🎷 Band' },
       { key: 'Choir',                         label: '🎤 Choir' },
