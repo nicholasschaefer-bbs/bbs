@@ -461,7 +461,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       }
       var misc = miscEl ? miscEl.value : '';
       if (misc) {
-        var isTrueCol = function(key) { return (c[key] || '').toString().toUpperCase() === 'TRUE' || c[key] === true; };
+        var isTrueCol = function(key) { return isTrue(c[key]); };
         var techKeys  = ['Loaner Phone','BBS Email Support'];
         var bnKeys    = ['Boys Nation','Boys Nation Finalist','Boys Nation Alternate','Boys Nation Selection'];
         var scholKeys = ['Samsung Scholarship','Boylan Scholarship'];
@@ -657,14 +657,14 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
     });
     // Miscellaneous tags
     var miscTagDefs = [
-      { key: 'Loaner',                   label: '📱 Loaner',   bg: '#06d6a0', color: '#ffffff' },
-      { key: 'Email Support',            label: '📧 Email',    bg: '#06d6a0', color: '#ffffff' },
-      { key: 'Samsung',                  label: '📱 Samsung',  bg: '#1428a0', color: '#ffffff' },
-      { key: 'Boylan',                   label: '🚔 Boylan',   bg: '#8b0000', color: '#ffffff' },
-      { key: 'Boys Nation Finalist',     label: '🌸 NATION',   bg: '#b87333', color: '#ffffff', hideIfAny: ['Boys Nation Alternate','Boys Nation Selection'] },
-      { key: 'Boys Nation Alternate',    label: '🌸 NATION',   bg: '#708090', color: '#ffffff', hideIfAny: ['Boys Nation Finalist','Boys Nation Selection'] },
-      { key: 'Boys Nation Selection',    label: '🌸 NATION',   bg: '#d4a017', color: '#ffffff', hideIfAny: ['Boys Nation Finalist','Boys Nation Alternate'] },
-      { key: 'Boys Nation',              label: '🌸 NATION',   bg: '#b87333', color: '#ffffff', hideIfAny: ['Boys Nation Finalist','Boys Nation Alternate','Boys Nation Selection'] },
+      { key: 'Loaner Phone',         label: '📱 Loaner',   bg: '#06d6a0', color: '#ffffff' },
+      { key: 'BBS Email Support',    label: '📧 Email',    bg: '#06d6a0', color: '#ffffff' },
+      { key: 'Samsung Scholarship',  label: '📱 Samsung',  bg: '#1428a0', color: '#ffffff' },
+      { key: 'Boylan Scholarship',   label: '🚔 Boylan',   bg: '#8b0000', color: '#ffffff' },
+      { key: 'Boys Nation Finalist', label: '🌸 NATION',   bg: '#b87333', color: '#ffffff', hideIfAny: ['Boys Nation Alternate','Boys Nation Selection'] },
+      { key: 'Boys Nation Alternate',label: '🌸 NATION',   bg: '#708090', color: '#ffffff', hideIfAny: ['Boys Nation Finalist','Boys Nation Selection'] },
+      { key: 'Boys Nation Selection',label: '🌸 NATION',   bg: '#d4a017', color: '#ffffff', hideIfAny: ['Boys Nation Finalist','Boys Nation Alternate'] },
+      { key: 'Boys Nation',          label: '🌸 NATION',   bg: '#b87333', color: '#ffffff', hideIfAny: ['Boys Nation Finalist','Boys Nation Alternate','Boys Nation Selection'] },
     ];
     miscTagDefs.forEach(function(mt) {
       if (isTrue(c[mt.key])) {
