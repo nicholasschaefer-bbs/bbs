@@ -281,16 +281,16 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
     <select id="filter-misc">
       <option value="">No Filter</option>
       <option value="__technology">Technology</option>
-      <option value="Loaner" style="font-style:italic;">&#8194;&#8194;Loaner Phone</option>
-      <option value="Email Support" style="font-style:italic;">&#8194;&#8194;BBS Email Support</option>
-      <option value="__boys_nation_misc">Boys Nation</option>
+      <option value="Loaner Phone" style="font-style:italic;">&#8194;&#8194;Loaner Phone</option>
+      <option value="BBS Email Support" style="font-style:italic;">&#8194;&#8194;BBS Email Support</option>
+      <option value="__boys_nation">Boys Nation</option>
+      <option value="Boys Nation" style="font-style:italic;">&#8194;&#8194;Boys Nation</option>
       <option value="Boys Nation Finalist" style="font-style:italic;">&#8194;&#8194;Finalist</option>
       <option value="Boys Nation Alternate" style="font-style:italic;">&#8194;&#8194;Alternate</option>
       <option value="Boys Nation Selection" style="font-style:italic;">&#8194;&#8194;Selection</option>
       <option value="__scholarship">Scholarship</option>
-      <option value="Samsung" style="font-style:italic;">&#8194;&#8194;Samsung Scholarship</option>
-      <option value="Boylan" style="font-style:italic;">&#8194;&#8194;Boylan Scholarship</option>
-      <option value="__na_misc">N/A</option>
+      <option value="Samsung Scholarship" style="font-style:italic;">&#8194;&#8194;Samsung Scholarship</option>
+      <option value="Boylan Scholarship" style="font-style:italic;">&#8194;&#8194;Boylan Scholarship</option>
     </select>
   </div>
   <button class="filter-reset" id="filter-reset">Reset filters</button>
@@ -461,19 +461,19 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       }
       var misc = miscEl ? miscEl.value : '';
       if (misc) {
-        var allMiscKeys = ['Loaner','Email Support','Boys Nation','Boys Nation Finalist','Boys Nation Alternate','Boys Nation Selection','Samsung','Boylan'];
-        var bnKeys      = ['Boys Nation','Boys Nation Finalist','Boys Nation Alternate','Boys Nation Selection'];
-        var techKeys    = ['Loaner','Email Support'];
-        var scholKeys   = ['Samsung','Boylan'];
-        var hasMisc = function(keys) { return keys.some(function(k) { return isTrue(c[k]); }); };
-        if      (misc === '__na_misc')          { if (hasMisc(allMiscKeys)) return false; }
-        else if (misc === '__technology')       { if (!hasMisc(techKeys))   return false; }
-        else if (misc === '__boys_nation_misc') { if (!hasMisc(bnKeys))     return false; }
-        else if (misc === '__scholarship')      { if (!hasMisc(scholKeys))  return false; }
-        else if (misc === 'Boys Nation Finalist' || misc === 'Boys Nation Alternate' || misc === 'Boys Nation Selection') {
-          if (!isTrue(c[misc])) return false;
+        var isTrueCol = function(key) { return (c[key] || '').toString().toUpperCase() === 'TRUE' || c[key] === true; };
+        var techKeys  = ['Loaner Phone','BBS Email Support'];
+        var bnKeys    = ['Boys Nation','Boys Nation Finalist','Boys Nation Alternate','Boys Nation Selection'];
+        var scholKeys = ['Samsung Scholarship','Boylan Scholarship'];
+        if (misc === '__technology') {
+          if (!techKeys.some(function(k) { return isTrueCol(k); })) return false;
+        } else if (misc === '__boys_nation') {
+          if (!bnKeys.some(function(k) { return isTrueCol(k); })) return false;
+        } else if (misc === '__scholarship') {
+          if (!scholKeys.some(function(k) { return isTrueCol(k); })) return false;
+        } else {
+          if (!isTrueCol(misc)) return false;
         }
-        else { if (!isTrue(c[misc])) return false; }
       }
       if (q) {
         var fileId = (c['File ID'] || '').toString().toLowerCase();
