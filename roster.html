@@ -246,7 +246,6 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       <option value="Color Guard">Color Guard</option>
       <option value="Parks &amp; Recreation Directors">Parks &amp; Recreation Directors</option>
       <option value="Press Corps">Press Corps</option>
-      <option value="Loaner">Loaner Phone</option>
       <option value="__na_extracurricular">N/A</option>
     </select>
   </div>
@@ -278,6 +277,14 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       <option value="Boys Nation Alternate" style="font-style:italic;">&#8194;&#8194;Alternate</option>
       <option value="Boys Nation Selection" style="font-style:italic;">&#8194;&#8194;Selection</option>
       <option value="__na_government">N/A</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <label>Miscellaneous</label>
+    <select id="filter-misc">
+      <option value="">All</option>
+      <option value="Loaner">Loaner Phone</option>
+      <option value="__na_misc">N/A</option>
     </select>
   </div>
   <button class="filter-reset" id="filter-reset">Reset filters</button>
@@ -354,6 +361,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
   var birthdayEl       = document.getElementById('filter-birthday');
   var extracurricularEl = document.getElementById('filter-extracurricular');
   var stateProcessEl    = document.getElementById('filter-state-process');
+  var miscEl            = document.getElementById('filter-misc');
 
   // Load data — called after auth confirmed
   window.loadRoster = function() {
@@ -448,6 +456,14 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
           var sv = c[stateProc];
           var isSv = sv === true || sv === 'true' || sv === 'TRUE' || sv === 'True' || sv === '1' || sv === 1;
           if (!isSv) return false;
+        }
+      }
+      var misc = miscEl ? miscEl.value : '';
+      if (misc) {
+        if (misc === '__na_misc') {
+          if (isTrue(c['Loaner'])) return false;
+        } else {
+          if (!isTrue(c[misc])) return false;
         }
       }
       if (q) {
@@ -581,7 +597,6 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       { key: 'Color Guard',                  label: '🇺🇸 Guard',       bg: '#ffd700', color: '#00467f' },
       { key: 'Parks & Recreation Directors', label: '🏞 Parks',        bg: '#99bc4b', color: '#ffffff' },
       { key: 'Press Corps',                  label: '📰 Press',        bg: '#000000', color: '#ffffff' },
-      { key: 'Loaner',                       label: '📱 Loaner',       bg: '#ff6b6b', color: '#ffffff' },
     ];
     extraTagDefs.forEach(function(et) {
       if (isTrue(c[et.key])) {
@@ -631,6 +646,23 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
         stag.style.setProperty('border-width', '1.5px', 'important');
         stag.style.setProperty('border-style', 'solid', 'important');
         tagsDiv.appendChild(stag);
+      }
+    });
+    // Miscellaneous tags
+    var miscTagDefs = [
+      { key: 'Loaner', label: '📱 Loaner', bg: '#06d6a0', color: '#ffffff' },
+    ];
+    miscTagDefs.forEach(function(mt) {
+      if (isTrue(c[mt.key])) {
+        var mtag = document.createElement('span');
+        mtag.className = 'tag';
+        mtag.textContent = mt.label;
+        mtag.style.setProperty('background-color', mt.bg, 'important');
+        mtag.style.setProperty('color', mt.color, 'important');
+        mtag.style.setProperty('border-color', mt.bg, 'important');
+        mtag.style.setProperty('border-width', '1.5px', 'important');
+        mtag.style.setProperty('border-style', 'solid', 'important');
+        tagsDiv.appendChild(mtag);
       }
     });
     body.appendChild(tagsDiv);
@@ -717,7 +749,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
     el.addEventListener('change', render);
   });
   resetBtn.addEventListener('click', function() {
-    searchEl.value = ''; countyEl.value = ''; cityEl.value = ''; partyEl.value = ''; if (birthdayEl) birthdayEl.value = ''; if (extracurricularEl) extracurricularEl.value = ''; if (stateProcessEl) stateProcessEl.value = '';
+    searchEl.value = ''; countyEl.value = ''; cityEl.value = ''; partyEl.value = ''; if (birthdayEl) birthdayEl.value = ''; if (extracurricularEl) extracurricularEl.value = ''; if (stateProcessEl) stateProcessEl.value = ''; if (miscEl) miscEl.value = '';
     render();
   });
 
