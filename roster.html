@@ -212,15 +212,15 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
   </div>
   <div class="filter-group">
     <label>County</label>
-    <select id="filter-county"><option value="">All counties</option></select>
+    <select id="filter-county"><option value="">All Counties</option></select>
   </div>
   <div class="filter-group">
     <label>City</label>
-    <select id="filter-city"><option value="">All cities</option></select>
+    <select id="filter-city"><option value="">All Cities</option></select>
   </div>
   <div class="filter-group">
     <label>Party</label>
-    <select id="filter-party"><option value="">All parties</option></select>
+    <select id="filter-party"><option value="">Both Parties</option></select>
   </div>
   <div class="filter-group">
     <label>Birthday</label>
@@ -368,10 +368,6 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
   var extracurricularEl = document.getElementById('filter-extracurricular');
   var stateProcessEl    = document.getElementById('filter-state-process');
   var miscEl            = document.getElementById('filter-misc');
-  // Force re-render when misc changes
-  if (miscEl) {
-    miscEl.addEventListener('change', function() { if (window.renderRoster) window.renderRoster(); });
-  }
 
   // Load data — called after auth confirmed
   window.loadRoster = function() {
@@ -436,7 +432,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       }
       var stateProc = stateProcessEl ? stateProcessEl.value : '';
       if (stateProc) {
-        var allGovRoles = ['Mayor','School Board','Party Delegate','Party Chair','Party Secretary','Party Campaign Manager','State Assembly','State Senate','Governor','Lt. Governor','Sec. of State','State Treasurer','Superintendent','Attorney General','State Supreme Court','Chief Justice','Boys Nation','Boys Nation Finalist','Boys Nation Alternate','Boys Nation Selection'];
+        var allGovRoles = ['Mayor','School Board','Party Delegate','Party Chair','Party Secretary','Party Campaign Manager','State Assembly','State Senate','Governor','Lt. Governor','Sec. of State','State Treasurer','Superintendent','Attorney General','State Supreme Court','Chief Justice'];
         if (stateProc === '__na_government') {
           if (allGovRoles.some(function(r) { return isTrue(c[r]); })) return false;
           return true;
@@ -467,19 +463,19 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       }
       var misc = miscEl ? miscEl.value : '';
       if (misc) {
-        var allMiscRoles = ['Loaner','Email Support','Boys Nation','Boys Nation Finalist','Boys Nation Alternate','Boys Nation Selection','Samsung','Boylan'];
-        if (misc === '__na_misc') {
-          if (allMiscRoles.some(function(k) { return isTrue(c[k]); })) return false;
-        } else if (misc === '__technology') {
-          if (!isTrue(c['Loaner']) && !isTrue(c['Email Support'])) return false;
-        } else if (misc === '__boys_nation_misc') {
-          var bnMisc = ['Boys Nation','Boys Nation Finalist','Boys Nation Alternate','Boys Nation Selection'];
-          if (!bnMisc.some(function(k) { return isTrue(c[k]); })) return false;
-        } else if (misc === '__scholarship') {
-          if (!isTrue(c['Samsung']) && !isTrue(c['Boylan'])) return false;
-        } else {
+        var allMiscKeys = ['Loaner','Email Support','Boys Nation','Boys Nation Finalist','Boys Nation Alternate','Boys Nation Selection','Samsung','Boylan'];
+        var bnKeys      = ['Boys Nation','Boys Nation Finalist','Boys Nation Alternate','Boys Nation Selection'];
+        var techKeys    = ['Loaner','Email Support'];
+        var scholKeys   = ['Samsung','Boylan'];
+        var hasMisc = function(keys) { return keys.some(function(k) { return isTrue(c[k]); }); };
+        if      (misc === '__na_misc')          { if (hasMisc(allMiscKeys)) return false; }
+        else if (misc === '__technology')       { if (!hasMisc(techKeys))   return false; }
+        else if (misc === '__boys_nation_misc') { if (!hasMisc(bnKeys))     return false; }
+        else if (misc === '__scholarship')      { if (!hasMisc(scholKeys))  return false; }
+        else if (misc === 'Boys Nation Finalist' || misc === 'Boys Nation Alternate' || misc === 'Boys Nation Selection') {
           if (!isTrue(c[misc])) return false;
         }
+        else { if (!isTrue(c[misc])) return false; }
       }
       if (q) {
         var fileId = (c['File ID'] || '').toString().toLowerCase();
