@@ -225,7 +225,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
   <div class="filter-group">
     <label>Birthday</label>
     <select id="filter-birthday">
-      <option value="">All Birthdays</option>
+      <option value="">No Filter</option>
       <option value="__bbs_birthday">BBS Birthday</option>
       <option value="Sunday" style="font-style:italic;">&#8194;&#8194;Sunday</option>
       <option value="Monday" style="font-style:italic;">&#8194;&#8194;Monday</option>
@@ -240,7 +240,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
   <div class="filter-group">
     <label>Extracurriculars</label>
     <select id="filter-extracurricular">
-      <option value="">All Extracurriculars</option>
+      <option value="">No Filter</option>
       <option value="Band">Band</option>
       <option value="Choir">Choir</option>
       <option value="Color Guard">Color Guard</option>
@@ -252,7 +252,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
   <div class="filter-group">
     <label>Government</label>
     <select id="filter-state-process">
-      <option value="">All Government</option>
+      <option value="">No Filter</option>
       <option value="Party Delegate">Party Delegate</option>
       <option value="__party_leadership">Party Leadership</option>
       <option value="Party Chair" style="font-style:italic;padding-left:16px;">&#8194;&#8194;Party Chair</option>
@@ -279,7 +279,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
   <div class="filter-group">
     <label>Miscellaneous</label>
     <select id="filter-misc">
-      <option value="">All</option>
+      <option value="">No Filter</option>
       <option value="__technology">Technology</option>
       <option value="Loaner" style="font-style:italic;">&#8194;&#8194;Loaner Phone</option>
       <option value="Email Support" style="font-style:italic;">&#8194;&#8194;BBS Email Support</option>
@@ -368,6 +368,10 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
   var extracurricularEl = document.getElementById('filter-extracurricular');
   var stateProcessEl    = document.getElementById('filter-state-process');
   var miscEl            = document.getElementById('filter-misc');
+  // Force re-render when misc changes
+  if (miscEl) {
+    miscEl.addEventListener('change', function() { if (window.renderRoster) window.renderRoster(); });
+  }
 
   // Load data — called after auth confirmed
   window.loadRoster = function() {
@@ -398,7 +402,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
     });
     populate(countyEl, Object.keys(counties).sort(), 'All Counties');
     populate(cityEl,   Object.keys(cities).sort(),   'All Cities');
-    populate(partyEl,  Object.keys(parties).sort(),  'All Parties');
+    populate(partyEl,  Object.keys(parties).sort(),  'Both Parties');
   }
 
   function populate(sel, vals, placeholder) {
@@ -486,6 +490,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
     });
   }
 
+  window.renderRoster = function() { render(); };
   function render() {
     var citizens = getFiltered();
     countEl.textContent = citizens.length + ' citizen' + (citizens.length !== 1 ? 's' : '');
