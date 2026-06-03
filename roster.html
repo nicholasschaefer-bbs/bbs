@@ -433,20 +433,19 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       var stateProc = stateProcessEl ? stateProcessEl.value : '';
       if (stateProc) {
         var allGovRoles = ['Mayor','School Board','Party Delegate','Party Chair','Party Secretary','Party Campaign Manager','State Assembly','State Senate','Governor','Lt. Governor','Sec. of State','State Treasurer','Superintendent','Attorney General','State Supreme Court','Chief Justice'];
-        if (stateProc === '__na_government') {
-          if (allGovRoles.some(function(r) { return isTrue(c[r]); })) return false;
-        }
         var cabinetRoles     = ['Governor','Lt. Governor','Sec. of State','State Treasurer','Superintendent','Attorney General'];
         var legislatureRoles = ['State Assembly','State Senate'];
         var leadershipRoles  = ['Party Chair','Party Secretary','Party Campaign Manager'];
+        var supremeRoles     = ['State Supreme Court','Chief Justice'];
         var checkRoles = function(roles) {
           return roles.some(function(r) {
             var v = c[r];
             return v === true || v === 'true' || v === 'TRUE' || v === 'True' || v === '1' || v === 1;
           });
         };
-        var supremeRoles = ['State Supreme Court', 'Chief Justice'];
-        if (stateProc === '__state_cabinet') {
+        if (stateProc === '__na_government') {
+          if (allGovRoles.some(function(r) { return isTrue(c[r]); })) return false;
+        } else if (stateProc === '__state_cabinet') {
           if (!checkRoles(cabinetRoles)) return false;
         } else if (stateProc === '__state_legislature') {
           if (!checkRoles(legislatureRoles)) return false;
