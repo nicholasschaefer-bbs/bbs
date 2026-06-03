@@ -290,6 +290,10 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       <option value="__scholarship">Scholarship</option>
       <option value="Samsung Scholarship" style="font-style:italic;">&#8194;&#8194;Samsung Scholarship</option>
       <option value="Boylan Scholarship" style="font-style:italic;">&#8194;&#8194;Boylan Scholarship</option>
+      <option value="__arrival_departure">Arrival &amp; Departure</option>
+      <option value="Bus Arrival" style="font-style:italic;">&#8194;&#8194;Bus Arrival</option>
+      <option value="Late Arrival" style="font-style:italic;">&#8194;&#8194;Late Arrival</option>
+      <option value="Early Departure" style="font-style:italic;">&#8194;&#8194;Early Departure</option>
     </select>
   </div>
   <button class="filter-reset" id="filter-reset">Reset filters</button>
@@ -470,6 +474,9 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
           if (!bnKeys.some(function(k) { return isTrueCol(k); })) return false;
         } else if (misc === '__scholarship') {
           if (!scholKeys.some(function(k) { return isTrueCol(k); })) return false;
+        } else if (misc === '__arrival_departure') {
+          var arrivalKeys = ['Bus Arrival','Late Arrival','Early Departure'];
+          if (!arrivalKeys.some(function(k) { return isTrueCol(k); })) return false;
         } else {
           if (!isTrueCol(misc)) return false;
         }
@@ -661,6 +668,9 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       { key: 'BBS Email Support',    label: '📧 Email',    bg: '#06d6a0', color: '#ffffff' },
       { key: 'Samsung Scholarship',  label: '📱 Samsung',  bg: '#1428a0', color: '#ffffff' },
       { key: 'Boylan Scholarship',   label: '🚔 Boylan',   bg: '#8b0000', color: '#ffffff' },
+      { key: 'Bus Arrival',          label: '🚌 Bus',      bg: '#2980b9', color: '#ffffff' },
+      { key: 'Late Arrival',         label: '⚠️ Late',     bg: '#e67e22', color: '#ffffff' },
+      { key: 'Early Departure',      label: '⚠️ Early',    bg: '#e67e22', color: '#ffffff' },
       { key: 'Boys Nation Finalist', label: '🌸 NATION',   bg: '#b87333', color: '#ffffff' },
       { key: 'Boys Nation Alternate',label: '🌸 NATION',   bg: '#708090', color: '#ffffff' },
       { key: 'Boys Nation Selection',label: '🌸 NATION',   bg: '#d4a017', color: '#ffffff' },
