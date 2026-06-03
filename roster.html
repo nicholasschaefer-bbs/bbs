@@ -246,6 +246,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       <option value="Color Guard">Color Guard</option>
       <option value="Parks &amp; Recreation Directors">Parks &amp; Recreation Directors</option>
       <option value="Press Corps">Press Corps</option>
+      <option value="Loaner">Loaner Phone</option>
       <option value="__na_extracurricular">N/A</option>
     </select>
   </div>
@@ -381,9 +382,9 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       if (c['City'])   cities[c['City']]     = 1;
       if (c['Party'])  parties[c['Party']]   = 1;
     });
-    populate(countyEl, Object.keys(counties).sort(), 'All counties');
-    populate(cityEl,   Object.keys(cities).sort(),   'All cities');
-    populate(partyEl,  Object.keys(parties).sort(),  'All parties');
+    populate(countyEl, Object.keys(counties).sort(), 'All Counties');
+    populate(cityEl,   Object.keys(cities).sort(),   'All Cities');
+    populate(partyEl,  Object.keys(parties).sort(),  'All Parties');
   }
 
   function populate(sel, vals, placeholder) {
@@ -580,6 +581,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       { key: 'Color Guard',                  label: '🇺🇸 Guard',       bg: '#ffd700', color: '#00467f' },
       { key: 'Parks & Recreation Directors', label: '🏞 Parks',        bg: '#99bc4b', color: '#ffffff' },
       { key: 'Press Corps',                  label: '📰 Press',        bg: '#000000', color: '#ffffff' },
+      { key: 'Loaner',                       label: '📱 Loaner',       bg: '#ff6b6b', color: '#ffffff' },
     ];
     extraTagDefs.forEach(function(et) {
       if (isTrue(c[et.key])) {
