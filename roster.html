@@ -123,7 +123,8 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
 <script>
 (function() {
   var TOKEN_KEY = 'bbs_id_token';
-  var VERIFIED_SESSION_KEY = 'bbs_verified_this_session';
+  var VERIFIED_AT_KEY = 'bbs_verified_at';
+  var SESSION_LENGTH_MS = 1000 * 60 * 60 * 24 * 30 * 6; // ~6 months
   var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsOPzMzZEvt8hYdbAu8lRQx-Sk-9W9M_kIUeFNejPLn9H4DtWr4A/exec';
 
   // Fetch with a timeout + retry/backoff, so a transient Apps Script
@@ -167,7 +168,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       .then(function(data) {
         if (data.email) {
           try { localStorage.setItem(TOKEN_KEY, idToken); } catch(e) {}
-          try { sessionStorage.setItem(VERIFIED_SESSION_KEY, '1'); } catch(e) {}
+          try { localStorage.setItem(VERIFIED_AT_KEY, String(Date.now())); } catch(e) {}
           hideGate();
         } else {
           // Server responded but explicitly says this account isn't allowed.
@@ -201,27 +202,30 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
   window.addEventListener('DOMContentLoaded', function() {
     var cached = null;
     try { cached = localStorage.getItem(TOKEN_KEY); } catch(e) {}
-    var alreadyVerifiedThisSession = false;
-    try { alreadyVerifiedThisSession = sessionStorage.getItem(VERIFIED_SESSION_KEY) === '1'; } catch(e) {}
+    var verifiedAt = 0;
+    try { verifiedAt = parseInt(localStorage.getItem(VERIFIED_AT_KEY), 10) || 0; } catch(e) {}
+    var stillWithinWindow = verifiedAt && (Date.now() - verifiedAt < SESSION_LENGTH_MS);
 
-    if (cached && alreadyVerifiedThisSession) {
-      // Already confirmed valid earlier in this tab session — skip the extra round trip.
+    if (cached && stillWithinWindow) {
+      // Verified within the last ~6 months — skip the server round trip entirely.
       document.getElementById('auth-gate').style.display = 'none';
       if (window.loadRoster) window.loadRoster();
       return;
     }
 
     if (cached) {
-      // Re-verify cached token is still valid
+      // No record of a recent verification (first run after this update, or the
+      // 6-month window has expired) — check in with the server once.
       window.bbsFetchWithRetry(SCRIPT_URL + '?action=verify&token=' + encodeURIComponent(cached))
         .then(function(r) { return r.json(); })
         .then(function(data) {
           if (data.email) {
-            try { sessionStorage.setItem(VERIFIED_SESSION_KEY, '1'); } catch(e) {}
+            try { localStorage.setItem(VERIFIED_AT_KEY, String(Date.now())); } catch(e) {}
             document.getElementById('auth-gate').style.display = 'none';
             if (window.loadRoster) window.loadRoster();
           } else {
             try { localStorage.removeItem(TOKEN_KEY); } catch(e) {}
+            try { localStorage.removeItem(VERIFIED_AT_KEY); } catch(e) {}
             initGoogleSignIn();
           }
         })
