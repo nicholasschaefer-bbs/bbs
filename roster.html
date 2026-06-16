@@ -112,8 +112,8 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
     </div>
     <h2 style="font-family:sans-serif;font-size:20px;font-weight:700;color:#1a1a1a;margin-bottom:6px;">Secure Document Portal</h2>
-    <p style="font-family:sans-serif;font-size:13px;color:#888;margin-bottom:1.75rem;">Authorized personnel only. Sign in with your organizational Google account to continue.</p>
-    <div id="auth-error" style="display:none;background:#fff5f5;border:1px solid #fcc;border-radius:6px;padding:10px 14px;font-size:13px;color:#c00;margin-bottom:1rem;font-family:sans-serif;text-align:left;">Access denied. This account is not authorized to access this system.</div>
+    <p style="font-family:sans-serif;font-size:13px;color:#888;margin-bottom:1.75rem;">Sign in with your Google account to continue.</p>
+    <div id="auth-error" style="display:none;background:#fff5f5;border:1px solid #fcc;border-radius:6px;padding:10px 14px;font-size:13px;color:#c00;margin-bottom:1rem;font-family:sans-serif;text-align:left;">Could not verify your Google account. Please try signing in again.</div>
     <div id="google-signin-btn" style="display:flex;justify-content:center;"></div>
     <p style="font-family:sans-serif;font-size:11px;color:#bbb;margin-top:1.5rem;">This system is monitored. Unauthorized access attempts are recorded.</p>
   </div>
@@ -123,7 +123,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
 <script>
 (function() {
   var TOKEN_KEY = 'bbs_id_token';
-  var VERIFIED_AT_KEY = 'bbs_verified_at';
+  var VERIFIED_AT_KEY = 'bbs_verified_at_v2';
   var SESSION_LENGTH_MS = 1000 * 60 * 60 * 24 * 30 * 6; // ~6 months
   var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsOPzMzZEvt8hYdbAu8lRQx-Sk-9W9M_kIUeFNejPLn9H4DtWr4A/exec';
 
@@ -171,9 +171,9 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
           try { localStorage.setItem(VERIFIED_AT_KEY, String(Date.now())); } catch(e) {}
           hideGate();
         } else {
-          // Server responded but explicitly says this account isn't allowed.
+          // Server responded but couldn't confirm a valid account.
           document.getElementById('auth-error').style.display = 'block';
-          document.getElementById('auth-error').textContent = 'Access denied. This Google account is not authorized. Please use your @badgerboysstate.org account.';
+          document.getElementById('auth-error').textContent = 'Could not verify your Google account. Please try signing in again.';
         }
       })
       .catch(function(err) {
@@ -555,22 +555,41 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
     // Photo
     var photoWrap = document.createElement('div');
     photoWrap.innerHTML = '<div class="card-photo-placeholder"><span class="initials">' + initials + '</span></div>';
-    if (c.photoId) {
+    var photoId = c.photoId || c.PhotoId || c.photoID || c.PhotoID || c['Photo ID'] || c['photo_id'] || '';
+    if (photoId) {
       var img = document.createElement('img');
       img.className = 'card-photo';
       img.alt = name;
       img.loading = 'lazy';
-      img.src = 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(c.photoId) + '&sz=w300';
       img.style.display = 'none';
+
+      // Drive's public thumbnail endpoint is the primary attempt; if that
+      // fails (often because the file isn't shared "Anyone with the link"),
+      // fall back to the alternate googleusercontent CDN URL before giving up.
+      var photoUrlAttempts = [
+        'https://drive.google.com/thumbnail?id=' + encodeURIComponent(photoId) + '&sz=w300',
+        'https://lh3.googleusercontent.com/d/' + encodeURIComponent(photoId) + '=w300'
+      ];
+      var photoAttemptIdx = 0;
+      function tryNextPhotoUrl() {
+        if (photoAttemptIdx >= photoUrlAttempts.length) {
+          console.warn('[roster] photo failed to load for "' + name + '" (photoId=' + photoId + '). Tried: ', photoUrlAttempts, '— check that the file in Drive is shared "Anyone with the link can view".');
+          img.style.display = 'none';
+          return;
+        }
+        img.src = photoUrlAttempts[photoAttemptIdx];
+        photoAttemptIdx++;
+      }
       img.onload = function() {
         img.style.display = 'block';
         var ph = photoWrap.querySelector('.card-photo-placeholder');
         if (ph) ph.style.display = 'none';
       };
-      img.onerror = function() {
-        img.style.display = 'none';
-      };
+      img.onerror = function() { tryNextPhotoUrl(); };
+      tryNextPhotoUrl();
       photoWrap.appendChild(img);
+    } else if (window.console && window.console.debug) {
+      console.debug('[roster] no photoId for "' + name + '" — check the roster JSON has a photoId field for this citizen.');
     }
     card.appendChild(photoWrap);
 
