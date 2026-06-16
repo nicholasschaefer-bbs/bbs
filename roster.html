@@ -123,7 +123,32 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
 <script>
 (function() {
   var TOKEN_KEY = 'bbs_id_token';
+  var VERIFIED_SESSION_KEY = 'bbs_verified_this_session';
   var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsOPzMzZEvt8hYdbAu8lRQx-Sk-9W9M_kIUeFNejPLn9H4DtWr4A/exec';
+
+  // Fetch with a timeout + retry/backoff, so a transient Apps Script
+  // quota hiccup or slow cold-start doesn't get mistaken for "denied."
+  // Exposed on window so the roster/audio scripts further down can use it too.
+  window.bbsFetchWithRetry = function(url, opts, attempts) {
+    attempts = attempts || 3;
+    opts = opts || {};
+    var delay = 600; // ms, doubles each retry
+    function attempt(n) {
+      var controller = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+      var timeoutId = controller ? setTimeout(function() { controller.abort(); }, 8000) : null;
+      var fetchOpts = controller ? Object.assign({}, opts, { signal: controller.signal }) : opts;
+      return fetch(url, fetchOpts).then(function(r) {
+        if (timeoutId) clearTimeout(timeoutId);
+        return r;
+      }).catch(function(err) {
+        if (timeoutId) clearTimeout(timeoutId);
+        if (n >= attempts) throw err;
+        return new Promise(function(resolve) { setTimeout(resolve, delay * Math.pow(2, n - 1)); })
+          .then(function() { return attempt(n + 1); });
+      });
+    }
+    return attempt(1);
+  };
 
   function hideGate() {
     document.getElementById('auth-gate').style.display = 'none';
@@ -137,20 +162,24 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
 
   function verifyAndStore(idToken) {
     // Verify token server-side via Apps Script
-    fetch(SCRIPT_URL + '?action=verify&token=' + encodeURIComponent(idToken))
+    window.bbsFetchWithRetry(SCRIPT_URL + '?action=verify&token=' + encodeURIComponent(idToken))
       .then(function(r) { return r.json(); })
       .then(function(data) {
         if (data.email) {
           try { localStorage.setItem(TOKEN_KEY, idToken); } catch(e) {}
+          try { sessionStorage.setItem(VERIFIED_SESSION_KEY, '1'); } catch(e) {}
           hideGate();
         } else {
+          // Server responded but explicitly says this account isn't allowed.
           document.getElementById('auth-error').style.display = 'block';
           document.getElementById('auth-error').textContent = 'Access denied. This Google account is not authorized. Please use your @badgerboysstate.org account.';
         }
       })
       .catch(function(err) {
+        // Could not reach the server / it errored after retries — NOT the same
+        // as being denied. Say so, so people stop assuming their account is wrong.
         document.getElementById('auth-error').style.display = 'block';
-        document.getElementById('auth-error').textContent = 'Verification failed. Please try again.';
+        document.getElementById('auth-error').textContent = 'Could not reach the server to verify your account (it may be busy). Please wait a moment and try signing in again.';
       });
   }
 
@@ -172,12 +201,23 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
   window.addEventListener('DOMContentLoaded', function() {
     var cached = null;
     try { cached = localStorage.getItem(TOKEN_KEY); } catch(e) {}
+    var alreadyVerifiedThisSession = false;
+    try { alreadyVerifiedThisSession = sessionStorage.getItem(VERIFIED_SESSION_KEY) === '1'; } catch(e) {}
+
+    if (cached && alreadyVerifiedThisSession) {
+      // Already confirmed valid earlier in this tab session — skip the extra round trip.
+      document.getElementById('auth-gate').style.display = 'none';
+      if (window.loadRoster) window.loadRoster();
+      return;
+    }
+
     if (cached) {
       // Re-verify cached token is still valid
-      fetch(SCRIPT_URL + '?action=verify&token=' + encodeURIComponent(cached))
+      window.bbsFetchWithRetry(SCRIPT_URL + '?action=verify&token=' + encodeURIComponent(cached))
         .then(function(r) { return r.json(); })
         .then(function(data) {
           if (data.email) {
+            try { sessionStorage.setItem(VERIFIED_SESSION_KEY, '1'); } catch(e) {}
             document.getElementById('auth-gate').style.display = 'none';
             if (window.loadRoster) window.loadRoster();
           } else {
@@ -185,7 +225,13 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
             initGoogleSignIn();
           }
         })
-        .catch(function() { initGoogleSignIn(); });
+        .catch(function() {
+          // Server unreachable after retries — don't nuke the saved token over
+          // a transient failure, just let them know and offer the sign-in button.
+          document.getElementById('auth-error').style.display = 'block';
+          document.getElementById('auth-error').textContent = 'Could not reach the server to verify your account (it may be busy). Please try again.';
+          initGoogleSignIn();
+        });
     } else {
       initGoogleSignIn();
     }
@@ -338,24 +384,6 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
   var currentAudio = null;
   var currentBtn   = null;
 
-  // Collapse filter bar on scroll — mobile only
-  var lastScroll = 0;
-  window.addEventListener('scroll', function() {
-    if (window.innerWidth > 600) return;
-    var filtersEl = document.querySelector('.filters');
-    var headerEl  = document.querySelector('.site-header');
-    if (!filtersEl) return;
-    var current = window.scrollY;
-    if (current > 60 && current > lastScroll) {
-      filtersEl.classList.add('collapsed');
-      if (headerEl) headerEl.style.display = 'none';
-    } else if (current < lastScroll - 10) {
-      filtersEl.classList.remove('collapsed');
-      if (headerEl) headerEl.style.display = '';
-    }
-    lastScroll = current;
-  }, { passive: true });
-
   var grid        = document.getElementById('roster-grid');
   var loading     = document.getElementById('roster-loading');
   var errorDiv    = document.getElementById('roster-error');
@@ -376,7 +404,8 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
   window.loadRoster = function() {
     loading.style.display = 'flex';
     errorDiv.style.display = 'none';
-    fetch(SCRIPT_URL + '?action=roster&token=' + encodeURIComponent(window.getAuthToken ? window.getAuthToken() : ''))
+    var fetcher = window.bbsFetchWithRetry || fetch;
+    fetcher(SCRIPT_URL + '?action=roster&token=' + encodeURIComponent(window.getAuthToken ? window.getAuthToken() : ''))
       .then(function(r) { return r.json(); })
       .then(function(data) {
         if (data.error) throw new Error(data.error);
@@ -388,7 +417,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       .catch(function(err) {
         loading.style.display = 'none';
         errorDiv.style.display = 'block';
-        errorMsg.textContent = err.message || 'Unknown error. Check your Apps Script URL.';
+        errorMsg.textContent = (err && err.message) ? err.message : 'Could not load the roster — the server may be busy. Try refreshing in a moment.';
       });
   };
 
@@ -526,30 +555,18 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
       var img = document.createElement('img');
       img.className = 'card-photo';
       img.alt = name;
+      img.loading = 'lazy';
+      img.src = 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(c.photoId) + '&sz=w300';
       img.style.display = 'none';
+      img.onload = function() {
+        img.style.display = 'block';
+        var ph = photoWrap.querySelector('.card-photo-placeholder');
+        if (ph) ph.style.display = 'none';
+      };
+      img.onerror = function() {
+        img.style.display = 'none';
+      };
       photoWrap.appendChild(img);
-      (function(pid, i, pw) {
-        var cacheKey = 'photo_' + pid;
-        var cached = null;
-        try { cached = sessionStorage.getItem(cacheKey); } catch(e) {}
-        function showImg(dataUrl) {
-          i.src = dataUrl;
-          i.style.display = 'block';
-          var ph = pw.querySelector('.card-photo-placeholder');
-          if (ph) ph.style.display = 'none';
-        }
-        if (cached) { showImg(cached); return; }
-        fetch(SCRIPT_URL + '?action=file&id=' + pid + '&token=' + encodeURIComponent(window.getAuthToken ? window.getAuthToken() : ''))
-          .then(function(r) { return r.json(); })
-          .then(function(json) {
-            var mime = json.mimeType || 'image/jpeg';
-            if (mime.indexOf('image') === -1) mime = 'image/jpeg';
-            var dataUrl = 'data:' + mime + ';base64,' + json.data;
-            try { sessionStorage.setItem(cacheKey, dataUrl); } catch(e) {}
-            showImg(dataUrl);
-          })
-          .catch(function() {});
-      })(c.photoId, img, photoWrap);
     }
     card.appendChild(photoWrap);
 
@@ -751,7 +768,8 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxM5eY02cy7tPnIxnrsO
 
     if (cached) { playDataUrl(cached); return; }
 
-    fetch(SCRIPT_URL + '?action=audio&id=' + audioId + '&token=' + encodeURIComponent(window.getAuthToken ? window.getAuthToken() : ''))
+    var fetcher = window.bbsFetchWithRetry || fetch;
+    fetcher(SCRIPT_URL + '?action=audio&id=' + audioId + '&token=' + encodeURIComponent(window.getAuthToken ? window.getAuthToken() : ''))
       .then(function(r) { return r.json(); })
       .then(function(json) {
         var dataUrl = 'data:' + json.mimeType + ';base64,' + json.data;
